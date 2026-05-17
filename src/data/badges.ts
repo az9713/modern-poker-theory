@@ -1,0 +1,99 @@
+import type { Badge } from '../types';
+
+export const BADGES: Badge[] = [
+  {
+    id: 'first-hand',
+    name: 'First Hand',
+    description: 'Completed Module 1: The Poker Universe',
+    icon: '🃏',
+    unlockCondition: 'Complete Module 1',
+  },
+  {
+    id: 'range-ranger',
+    name: 'Range Ranger',
+    description: 'Completed Module 2: The Information Game',
+    icon: '🧠',
+    unlockCondition: 'Complete Module 2',
+  },
+  {
+    id: 'math-wizard',
+    name: 'Math Wizard',
+    description: 'Completed Module 3: Counting What Matters',
+    icon: '🔢',
+    unlockCondition: 'Complete Module 3',
+  },
+  {
+    id: 'position-pro',
+    name: 'Position Pro',
+    description: 'Completed Module 4: Position Power',
+    icon: '📍',
+    unlockCondition: 'Complete Module 4',
+  },
+  {
+    id: 'board-reader',
+    name: 'Board Reader',
+    description: 'Completed Module 5: Reading the Board',
+    icon: '🎯',
+    unlockCondition: 'Complete Module 5',
+  },
+  {
+    id: 'bet-sizer',
+    name: 'Bet Sizer',
+    description: 'Completed Module 6: Betting Language',
+    icon: '💬',
+    unlockCondition: 'Complete Module 6',
+  },
+  {
+    id: 'river-shark',
+    name: 'River Shark',
+    description: 'Completed Module 7: The Full Game',
+    icon: '🌊',
+    unlockCondition: 'Complete Module 7',
+  },
+  {
+    id: 'exploit-master',
+    name: 'Exploit Master',
+    description: 'Completed all 8 modules of the MPT curriculum',
+    icon: '⚔️',
+    unlockCondition: 'Complete Module 8',
+  },
+  {
+    id: 'combo-crusher',
+    name: 'Combo Crusher',
+    description: 'Answered 50 quiz questions correctly',
+    icon: '💥',
+    unlockCondition: 'Answer 50 questions correctly',
+  },
+  {
+    id: 'streak-master',
+    name: 'Streak Master',
+    description: 'Achieved a 10-answer correct streak',
+    icon: '🔥',
+    unlockCondition: 'Get 10 consecutive correct answers',
+  },
+  {
+    id: 'speed-demon',
+    name: 'Speed Demon',
+    description: 'Completed a quiz in under 90 seconds',
+    icon: '⚡',
+    unlockCondition: 'Finish a quiz in under 90 seconds',
+  },
+  {
+    id: 'perfect-score',
+    name: 'Perfect Score',
+    description: 'Got 100% on any module quiz',
+    icon: '🏆',
+    unlockCondition: 'Score 100% on any quiz',
+  },
+];
+
+export const MODULE_BADGES: Record<string, string> = {
+  module1: 'first-hand',
+  module2: 'range-ranger',
+  module3: 'math-wizard',
+  module4: 'position-pro',
+  module5: 'board-reader',
+  module6: 'bet-sizer',
+  module7: 'river-shark',
+  module8: 'exploit-master',
+};

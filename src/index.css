@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-felt: #0d1f13;
+  --color-felt-light: #162b1a;
+  --color-felt-border: #2a4a30;
+  --color-gold: #c9a227;
+  --color-gold-light: #e8c347;
+  --color-text: #f0ebe0;
+  --color-text-muted: #9db89f;
+  --color-red-suit: #e03535;
+  --color-black-suit: #e8e0d0;
+  --color-success: #4ade80;
+  --color-error: #f87171;
+  --color-warning: #fb923c;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-felt);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Card animations */
+@keyframes cardFlip {
+  0% { transform: rotateY(90deg); opacity: 0; }
+  100% { transform: rotateY(0deg); opacity: 1; }
+}
+
+@keyframes xpBurst {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.3); opacity: 0; }
+}
+
+@keyframes badgeUnlock {
+  0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+  70% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.card-flip {
+  animation: cardFlip 0.3s ease-out;
+}
+
+.xp-burst {
+  animation: xpBurst 1s ease-out forwards;
+}
+
+.badge-unlock {
+  animation: badgeUnlock 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-felt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-felt-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
