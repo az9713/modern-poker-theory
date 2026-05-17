@@ -60,6 +60,11 @@ npm run build   # production build → dist/
 
 No backend or API keys required. Fully static.
 
+## Built With AI
+
+- **Research & curriculum design** — GPT-5.5 with Extended Thinking synthesized Michael Acevedo's *Modern Poker Theory* into the 33-section treatise that drives all lesson content
+- **Implementation** — Claude (Sonnet 4.6) built the full React application from the treatise
+
 ## The Core Premise
 
 > *Poker is a repeated decision problem under hidden information. GTO gives you the equilibrium baseline. Exploitative poker makes money when opponents deviate from that baseline.*
