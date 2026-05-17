@@ -181,6 +181,63 @@ export function LessonContent({ sections }: Props) {
               </div>
             );
 
+          case 'step-list':
+            if (!section.steps?.length) return null;
+            return (
+              <div key={i} className="bg-[#162b1a] border border-[#2a4a30] rounded-lg p-4">
+                {section.content && (
+                  <p className="text-[#9db89f] text-sm mb-3 font-medium">{section.content}</p>
+                )}
+                <ol className="space-y-2">
+                  {section.steps.map((step, si) => (
+                    <li key={si} className="flex items-start gap-3">
+                      <span className="shrink-0 w-6 h-6 rounded-full bg-[#4ade80]/20 border border-[#4ade80]/40 flex items-center justify-center text-xs text-[#4ade80] font-bold mt-0.5">
+                        {si + 1}
+                      </span>
+                      <span className="text-[#f0ebe0] text-sm leading-relaxed">
+                        {renderText(step)}
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            );
+
+          case 'scenario': {
+            const s = section.scenarioData;
+            if (!s) return null;
+            const rows = [
+              { label: 'Pot', value: s.pot },
+              { label: 'Stacks', value: s.stacks },
+              { label: 'Position', value: s.position },
+              ...(s.action ? [{ label: 'Action', value: s.action }] : []),
+            ];
+            return (
+              <div key={i} className="bg-[#0d1f13] border border-[#2a4a30] rounded-lg p-4">
+                <div className="text-[#c9a227] text-sm font-bold mb-3">🃏 Scenario</div>
+                <div className="space-y-1.5 text-sm">
+                  {rows.map(({ label, value }) => (
+                    <div key={label} className="flex gap-2">
+                      <span className="text-[#9db89f] w-20 shrink-0">{label}:</span>
+                      <span className="text-[#f0ebe0]">{value}</span>
+                    </div>
+                  ))}
+                </div>
+                {s.board && s.board.length > 0 && (
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-[#9db89f] text-sm w-20 shrink-0">Board:</span>
+                    <HandDisplay cards={s.board} size="md" animate />
+                  </div>
+                )}
+                {section.content && (
+                  <p className="mt-3 text-[#9db89f] text-sm leading-relaxed border-t border-[#2a4a30] pt-3">
+                    {renderText(section.content)}
+                  </p>
+                )}
+              </div>
+            );
+          }
+
           default:
             return null;
         }

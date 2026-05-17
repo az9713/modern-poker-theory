@@ -727,4 +727,103 @@ export const QUIZZES: Record<string, QuizQuestion[]> = {
       explanation: 'Extract invariants from solvers: "Ace-high dry boards favor the raiser" or "River overbets require polar ranges." Don\'t memorize frequencies like "bet 33% with QJ on A72r 67% of the time" — those are useless without context.',
     },
   ],
+
+  module9: [
+    {
+      id: 'm9q1', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'You have a flush draw with 9 outs on the flop. Pot is $100, villain bets $50. Using the Rule of 4, what is your approximate equity to improve by the river?',
+      options: [
+        { id: 'a', text: '18%' },
+        { id: 'b', text: '36%' },
+        { id: 'c', text: '45%' },
+        { id: 'd', text: '25%' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Rule of 4: outs × 4 = approximate equity on the flop to improve by the river. 9 × 4 = 36%. The Rule of 2 (9 × 2 = 18%) applies when you\'re on the turn, not the flop.',
+    },
+    {
+      id: 'm9q2', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'What does SPR stand for, and what does a low SPR (~3-4) indicate about postflop strategy?',
+      options: [
+        { id: 'a', text: 'Stack-to-Pot Ratio; strong hands should commit quickly' },
+        { id: 'b', text: 'Stack-to-Pot Ratio; draws are highly profitable' },
+        { id: 'c', text: 'Suited-to-Pot Ratio; suited connectors gain value' },
+        { id: 'd', text: 'Stack-to-Pot Ratio; slow-playing becomes correct' },
+      ],
+      correctOptionId: 'a',
+      explanation: 'SPR = Effective stack / Pot. A low SPR (~3-4, typical in 3-bet pots) means strong hands should bet and commit quickly. Slow-playing loses value, and draws are often not profitable enough to call large bets.',
+    },
+    {
+      id: 'm9q3', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'With 8BB in a tournament, you are in the SB. Everyone folds to you. What is your correct strategy?',
+      options: [
+        { id: 'a', text: 'Min-raise to keep the pot small' },
+        { id: 'b', text: 'Shove or fold — push/fold strategy applies below 15BB' },
+        { id: 'c', text: 'Limp and see a cheap flop' },
+        { id: 'd', text: 'Fold unless you have a premium hand' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Below 15BB, push/fold is the correct strategy. A min-raise leaves you pot-committed anyway and gives you worse risk/reward than shoving. Shoving applies maximum fold equity pressure. Limping is almost never correct in push/fold situations.',
+    },
+    {
+      id: 'm9q4', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'You are playing NL100 online (100 big blind buy-in = $100). What is the recommended minimum bankroll to play this stake responsibly?',
+      options: [
+        { id: 'a', text: '$500 (5 buy-ins)' },
+        { id: 'b', text: '$1,000 (10 buy-ins)' },
+        { id: 'c', text: '$2,000 (20 buy-ins)' },
+        { id: 'd', text: '$3,000 (30 buy-ins)' },
+      ],
+      correctOptionId: 'd',
+      explanation: '30 buy-ins ($3,000 for NL100) is the recommended minimum for cash games. A 10 buy-in downswing — statistically normal for a winning player — would leave you with 20 buy-ins to continue, avoiding the need to move down in stakes.',
+    },
+    {
+      id: 'm9q5', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'A solver shows that with a specific hand, "Bet 66%: 52%, Check: 48%". What does this mean?',
+      options: [
+        { id: 'a', text: 'You should bet 66% of the pot 52% of the time, randomly' },
+        { id: 'b', text: 'Both betting and checking have nearly equal expected value — both actions are approximately correct' },
+        { id: 'c', text: 'You should always bet because betting frequency is above 50%' },
+        { id: 'd', text: 'The solver cannot solve this spot precisely' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Near 50/50 mixing in solver output indicates that both actions have nearly equal EV for this hand. For humans, this means both bet and check are approximately correct choices. Pick based on reads, and don\'t agonize over the "exact" frequency.',
+    },
+    {
+      id: 'm9q6', moduleId: 'module9', type: 'multi-choice', difficulty: 3, xpReward: 10,
+      prompt: 'Which type of tilt describes a player who keeps calling down with weak hands because they "know" they are being bluffed?',
+      options: [
+        { id: 'a', text: 'Results tilt' },
+        { id: 'b', text: 'Boredom tilt' },
+        { id: 'c', text: 'Entitlement tilt or injustice tilt' },
+        { id: 'd', text: 'Desperation tilt' },
+      ],
+      correctOptionId: 'c',
+      explanation: 'Entitlement tilt ("I deserve to win this hand") and injustice tilt ("they\'re bluffing me and it\'s unfair") both manifest as excessive hero calls and refusing to fold. The player is making decisions based on ego or frustration rather than pot odds and range analysis.',
+    },
+    {
+      id: 'm9q7', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,
+      prompt: 'What is the most useful thing to extract from solver study?',
+      options: [
+        { id: 'a', text: 'The exact bet frequency for every hand on every board' },
+        { id: 'b', text: 'General invariants — strategic principles that hold across many similar spots' },
+        { id: 'c', text: 'Which specific hands to bluff with on each exact board texture' },
+        { id: 'd', text: 'The GTO mixed strategy percentage for each action' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Humans cannot memorize exact GTO frequencies — and trying to is counterproductive. The real value of solver study is extracting invariants: strategic principles that apply broadly. "Dynamic boards favor check-backs for IP players" is learnable and transferable. "Bet 43% on this exact board with JTo" is not.',
+    },
+    {
+      id: 'm9q8', moduleId: 'module9', type: 'multi-choice', difficulty: 1, xpReward: 10,
+      prompt: 'According to the three-pillar study framework, which activity should take the MOST time relative to the others?',
+      options: [
+        { id: 'a', text: 'Solver study and reading theory' },
+        { id: 'b', text: 'Hand review and analysis' },
+        { id: 'c', text: 'Playing volume' },
+        { id: 'd', text: 'Watching training videos' },
+      ],
+      correctOptionId: 'c',
+      explanation: 'Playing volume (50-60% of poker time) should be the dominant activity. Volume generates the hands you need to review, builds real-time pattern recognition, and provides the raw experience that theory and review are built on. However, volume without review of mistakes is far less effective.',
+    },
+  ],
 };

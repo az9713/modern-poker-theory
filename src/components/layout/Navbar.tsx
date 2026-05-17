@@ -12,6 +12,7 @@ export function Navbar() {
     { to: '/learn', label: 'Learn' },
     { to: '/tools', label: 'Tools' },
     { to: '/progress', label: 'Progress' },
+    { to: '/reference', label: '📖 Reference' },
   ];
 
   return (

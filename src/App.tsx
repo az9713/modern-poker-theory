@@ -6,6 +6,7 @@ import { Lesson } from './pages/Lesson';
 import { Quiz } from './pages/Quiz';
 import { Tools } from './pages/Tools';
 import { Progress } from './pages/Progress';
+import { Reference } from './pages/Reference';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/quiz/:moduleId" element={<Quiz />} />
           <Route path="/tools" element={<Tools />} />
           <Route path="/progress" element={<Progress />} />
+          <Route path="/reference" element={<Reference />} />
         </Routes>
       </div>
     </BrowserRouter>

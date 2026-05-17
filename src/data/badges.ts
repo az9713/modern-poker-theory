@@ -85,6 +85,13 @@ export const BADGES: Badge[] = [
     icon: '🏆',
     unlockCondition: 'Score 100% on any quiz',
   },
+  {
+    id: 'study-master',
+    name: 'Study Master',
+    description: 'Completed Module 9: The Study Table — solver literacy, push/fold, mental game, and study systems',
+    icon: '📚',
+    unlockCondition: 'Complete Module 9',
+  },
 ];
 
 export const MODULE_BADGES: Record<string, string> = {
@@ -96,4 +103,5 @@ export const MODULE_BADGES: Record<string, string> = {
   module6: 'bet-sizer',
   module7: 'river-shark',
   module8: 'exploit-master',
+  module9: 'study-master',
 };

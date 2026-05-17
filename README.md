@@ -24,26 +24,38 @@ This app takes that book's core ideas and turns them into a gamified, interactiv
 
 ## What You'll Learn
 
-The course follows Acevedo's framework across 8 progressive modules:
+The course follows Acevedo's framework across 9 progressive modules:
 
 | Module | Topic | Belt |
 |--------|-------|------|
 | 1 | The Poker Universe — deck, hand rankings, table positions | White |
 | 2 | The Information Game — range thinking, the 13×13 grid | Blue |
-| 3 | Counting What Matters — combinatorics, EV, pot odds, MDF | Blue |
-| 4 | Position Power — BTN hierarchy, opening ranges, stack depth | Purple |
-| 5 | Reading the Board — static vs dynamic, range vs nut advantage | Purple |
-| 6 | Betting Language — bet sizing, c-betting, 7 reasons to bet | Brown |
-| 7 | The Full Game — turn/river play, bluff selection, multiway pots | Brown |
-| 8 | Exploit Mode — the exploitation matrix, population leaks | Black |
+| 3 | Counting What Matters — combinatorics, EV, pot odds, MDF, equity & outs | Blue |
+| 4 | Position Power — BTN hierarchy, opening ranges, preflop charts, stack depth | Purple |
+| 5 | Reading the Board — static vs dynamic, range vs nut advantage, equity buckets | Purple |
+| 6 | Betting Language — bet sizing, c-betting, 7 reasons to bet, 3-bet pot postflop | Brown |
+| 7 | The Full Game — turn/river play, bluff selection, multiway pots, hand review | Brown |
+| 8 | Exploit Mode — the exploitation matrix, population leaks, bankroll & variance | Black |
+| 9 | The Study Table — solver literacy, push/fold, game selection, mental game, study routines | Black |
 
 ## Features
 
-- **Interactive lessons** with playing card displays, position diagrams, and the 13×13 range grid
-- **Quiz system** with three question types: multiple choice, board classification, and numeric calculation
+- **40+ interactive lessons** with playing card displays, position diagrams, and the 13×13 range grid
+- **Worked examples** — step-by-step EV calculations, pot odds decisions, and scenario walkthroughs
+- **Preflop range charts** — interactive range grids for UTG, BTN, and BB positions
+- **Quiz system** with 80+ questions across three types: multiple choice, board classification, and numeric calculation
 - **Interactive tools**: Pot Odds Calculator, EV Calculator, Range Builder
-- **Gamification**: XP, 7 levels (Fish → Poker Theorist), 12 badges, daily streak tracking
+- **Reference Glossary** (`/reference`) — searchable index of 200+ key terms, filterable by module
+- **Gamification**: XP, 7 levels (Fish → Poker Theorist), 13 badges, daily streak tracking
 - **Progress persistence** via localStorage — picks up where you left off
+
+## Curriculum Depth
+
+The course is structured around Acevedo's three-part framework:
+
+- **Elements of Theory** — EV, equity, Nash equilibrium, GTO vs exploitative play, MDF, combinatorics
+- **Preflop Theory & Practice** — opening ranges by position, 3-bet pots, push/fold, stack depth, ICM, bankroll
+- **Postflop Theory & Practice** — equity buckets, bet sizing, board textures, c-betting, turn/river play, hand review, solver study
 
 ## Running Locally
 

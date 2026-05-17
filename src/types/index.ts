@@ -29,11 +29,21 @@ export type LessonSectionType =
   | 'formula'
   | 'board-demo'
   | 'position-table'
-  | 'key-point';
+  | 'key-point'
+  | 'step-list'
+  | 'scenario';
 
 export interface TableData {
   headers: string[];
   rows: string[][];
+}
+
+export interface ScenarioData {
+  pot: string;
+  stacks: string;
+  position: string;
+  action?: string;
+  board?: Card[];
 }
 
 export interface LessonSection {
@@ -45,6 +55,8 @@ export interface LessonSection {
   formula?: string;
   formulaLabel?: string;
   calloutType?: 'concept' | 'example' | 'warning' | 'tip';
+  steps?: string[];
+  scenarioData?: ScenarioData;
 }
 
 export interface KeyTerm {

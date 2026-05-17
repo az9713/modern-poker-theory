@@ -512,6 +512,30 @@ export const MODULES: Module[] = [
             type: 'key-point',
             content: 'EV is not about winning individual hands — it\'s about making correct decisions that profit **over thousands of repetitions**. You can make a +EV call and still lose the hand.',
           },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Worked Example 1: Bluff EV**\nPot = $100. You bet $50 as a pure bluff. Villain folds 40% of the time.\n\nEV = P(fold) × pot_won + P(call) × amount_lost\nEV = 0.40 × $100 + 0.60 × (−$50)\nEV = $40 − $30 = **+$10**\n\nThis bluff is profitable because villain folds often enough.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Worked Example 2: Value Bet EV**\nPot = $80. You bet $60 for value. Villain calls with 50% of their range. When called, you win 70% of the time (your equity vs calling range).\n\nEV = P(fold) × $80 + P(call) × [0.70 × ($80+$60+$60) − 0.30 × $60]\nEV = 0.50 × $80 + 0.50 × [0.70 × $200 − 0.30 × $60]\nEV = $40 + 0.50 × [$140 − $18]\nEV = $40 + $61 = **+$101**\n\nValue betting strong hands against calling ranges is highly profitable.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Worked Example 3: Calling EV**\nPot = $100. Villain bets $50. You must call $50 to win $150.\n\nRequired equity = 50 / (100 + 50 + 50) = 25%\n\nIf your hand has 28% equity vs villain\'s betting range:\nEV(call) = 0.28 × $200 − 0.72 × $50 = $56 − $36 = **+$20**\n\nSince 28% > 25%, calling has positive EV. Even a small equity edge is enough.',
+          },
+          {
+            type: 'step-list',
+            content: 'EV Calculation Procedure (3 steps):',
+            steps: [
+              '**Identify the outcomes** — what happens if villain folds? calls? raises?',
+              '**Assign probabilities** — estimate how often each outcome occurs based on villain\'s range and tendencies',
+              '**Calculate:** EV = Σ [P(outcome) × payoff(outcome)] — sum across all outcomes',
+            ],
+          },
         ],
       },
       {
@@ -557,6 +581,37 @@ export const MODULES: Module[] = [
             calloutType: 'warning',
             content: '**Pot odds ≠ MDF.** Pot odds answer: "Is THIS HAND allowed to call?" MDF answers: "How much of MY RANGE must continue?" These are different questions that beginners constantly confuse.',
           },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$120',
+              stacks: '$200 effective',
+              position: 'You are in the Big Blind, villain is on the Button',
+              action: 'Flop: K♠7♦2♣ — you check, villain bets $60 (50% pot) on the turn 9♥. You have J♠T♠ (flush draw + gutshot).',
+              board: [
+                { rank: 'K', suit: 'spades' },
+                { rank: '7', suit: 'diamonds' },
+                { rank: '2', suit: 'clubs' },
+                { rank: '9', suit: 'hearts' },
+              ],
+            },
+            content: 'Walk through the pot odds calculation for a flush draw call on this turn.',
+          },
+          {
+            type: 'step-list',
+            content: 'Full pot odds decision process:',
+            steps: [
+              '**Count your outs** — you have a flush draw (9 spade outs) + a gutshot to Q or 8 for a straight (+4 outs, but 2 overlap with flush). Approximately **12 clean outs**.',
+              '**Estimate equity (Rule of 2)** — on the turn: 12 outs × 2 = ~24% equity to improve on the river.',
+              '**Calculate required equity** — pot is $120, villain bets $60: required equity = $60 / ($120 + $60 + $60) = 60/240 = **25%**.',
+              '**Compare: 24% vs 25%** — you are just barely short on direct pot odds. However, you still have implied odds (future betting if you hit). With position and implied odds, this is a marginal call or fold depending on reads.',
+              '**Decision** — with strong implied odds against a non-tricky villain, calling is defensible. Against a player who won\'t pay off your flushes, fold.',
+            ],
+          },
+          {
+            type: 'key-point',
+            content: 'Pot odds give you the **minimum** equity needed to call. Implied odds (future value) can justify calls even when your current equity falls slightly short — but only if villain will continue paying you off when you hit.',
+          },
         ],
       },
       {
@@ -592,6 +647,76 @@ export const MODULES: Module[] = [
           {
             type: 'key-point',
             content: 'GTO says: defend enough against a **balanced** opponent. Exploit says: if villain is unbalanced (never bluffs), fold more than MDF suggests.',
+          },
+        ],
+      },
+      {
+        id: 'module3-lesson6',
+        title: 'Equity & Outs: The Rule of 2 and 4',
+        estimatedMinutes: 10,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'Out', definition: 'A card that, when dealt, completes your draw and gives you the best hand' },
+          { term: 'Rule of 4', definition: 'On the flop: multiply your outs by 4 to estimate your equity to improve by the river' },
+          { term: 'Rule of 2', definition: 'On the turn: multiply your outs by 2 to estimate your equity to improve on the river' },
+          { term: 'Dirty out', definition: 'An out that completes your draw but likely makes the villain a stronger hand simultaneously' },
+          { term: 'Nut flush draw', definition: 'A flush draw where the ace of the relevant suit is in your hand — the strongest possible flush draw' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'An **out** is a card remaining in the deck that will make your hand the best hand if it comes. Knowing your outs precisely lets you quickly estimate your equity and make correct pot odds decisions.',
+          },
+          {
+            type: 'table',
+            content: 'Common draw types and their equity approximations:',
+            tableData: {
+              headers: ['Draw Type', 'Outs', 'Flop → River (×4)', 'Turn → River (×2)'],
+              rows: [
+                ['Flush draw', '9', '~36%', '~18%'],
+                ['Open-ended straight draw (OESD)', '8', '~32%', '~16%'],
+                ['Combo draw: flush + OESD', '15', '~60%', '~30%'],
+                ['Combo draw: flush + gutshot', '12', '~48%', '~24%'],
+                ['Gutshot straight draw', '4', '~16%', '~8%'],
+                ['Two overcards (vs made pair)', '6', '~24%', '~12%'],
+                ['Set draw (pocket pair vs two overcards)', '2', '~8%', '~4%'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Dirty Outs: Be Careful What You Count**\n\nNot all outs are clean. A "dirty out" completes your draw but simultaneously makes the villain a stronger hand.\n\nExample: You hold T♠9♠ on a K♠Q♠3♦ board. You have a flush draw (9 outs). But the J that completes your straight also gives villains holding AJ or JT a stronger straight. That J is a dirty out for the straight, though it\'s still clean for the flush.\n\nAlso: if you\'re drawing to two pair and the villain has a full house draw, some of your two-pair outs also improve them. Adjust your out count down in these situations.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$100',
+              stacks: '$200 effective',
+              position: 'You are in BB, villain is BTN',
+              action: 'Flop: A♠8♠3♦. Villain bets $50 (50% pot). You hold J♠T♠.',
+              board: [
+                { rank: 'A', suit: 'spades' },
+                { rank: '8', suit: 'diamonds' },
+                { rank: '3', suit: 'diamonds' },
+              ],
+            },
+            content: 'You have the nut flush draw (J♠T♠ — the J♠ is a strong blocker to the best flush). Let\'s calculate whether to call.',
+          },
+          {
+            type: 'step-list',
+            content: 'Decision process:',
+            steps: [
+              '**Count outs** — 9 spade outs for the flush. The Q, K give you straight potential but are marginal/dirty on this board. Use **9 clean outs**.',
+              '**Apply Rule of 4** — 9 × 4 = ~36% equity to improve by the river.',
+              '**Calculate required equity** — pot = $100, bet = $50: required = $50 / ($100+$50+$50) = 50/200 = **25%**.',
+              '**Compare** — 36% > 25%. You have significantly more equity than needed. **Call is correct.**',
+              '**Consider implied odds** — if you hit a spade on the turn, villain will often pay off a second bet. This makes the call even more profitable than the direct pot odds show.',
+            ],
+          },
+          {
+            type: 'key-point',
+            content: '**Rule of 4 on flop. Rule of 2 on turn.** These are approximations — accurate within 1-2% for typical draw counts. Always count outs carefully and remove dirty outs before applying the multiplier.',
           },
         ],
       },
@@ -772,6 +897,98 @@ export const MODULES: Module[] = [
           },
         ],
       },
+      {
+        id: 'module4-lesson6',
+        title: 'Preflop Range Charts by Position',
+        estimatedMinutes: 12,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'Opening range', definition: 'The set of hands you voluntarily enter the pot with (by raising first in) from a given position' },
+          { term: 'VPIP', definition: 'Voluntarily Put money In Pot — the percentage of hands a player plays; a key stat for identifying loose or tight players' },
+          { term: 'Linear 3-bet range', definition: 'A 3-betting range that contains only your strongest hands — value heavy, no bluffs' },
+          { term: 'Polarized 3-bet range', definition: 'A 3-betting range with a mix of premium hands AND bluffs — you either have the nuts or air, nothing in between' },
+          { term: 'Flatting range', definition: 'Hands that call a raise rather than 3-betting or folding — medium-strength, playable but not strong enough to 3-bet' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'The core preflop principle is simple: **open tighter from early position, wider from late position.** This is because position persists throughout the hand — playing wider from the button is profitable because you act last on every postflop street.',
+          },
+          {
+            type: 'table',
+            content: 'Approximate opening ranges by position (6-max, 100BB, no ante):',
+            tableData: {
+              headers: ['Position', 'Open %', 'Example hands'],
+              rows: [
+                ['UTG (Under the Gun)', '~14%', 'TT+, AJs+, AQo+, KQs, QJs (tightest — 5 players left to act)'],
+                ['MP (Middle Position)', '~18%', '99+, ATs+, AJo+, KJs+, QJs (slightly wider)'],
+                ['CO (Cutoff)', '~25%', '77+, A8s+, A9o+, KTs+, QTs+, JTs (wider with better position)'],
+                ['BTN (Button)', '~40%', '22+, A2s+, A5o+, K7s+, Q8s+, J8s+, T8s+, 97s+, 87s (very wide — best position)'],
+                ['SB (Small Blind)', '~40% (raise or fold)', 'Similar to BTN range but tighter vs strong EP opens; use raise-or-fold strategy, avoid limping'],
+                ['BB (Big Blind)', 'Defend ~45-55% vs BTN', 'Call wide due to pricing: 22+, most suited hands, many offsuit broadways (already paid 1BB)'],
+              ],
+            },
+          },
+          {
+            type: 'range-grid',
+            content: 'UTG opening range (~14%) — these are the hands you can profitably play with 5 players left to act:',
+            rangeHighlight: ['AA','KK','QQ','JJ','TT','AKs','AQs','AJs','ATs','AKo','AQo','KQs'],
+          },
+          {
+            type: 'range-grid',
+            content: 'BTN opening range (~40%) — act last postflop so you can play many more hands profitably:',
+            rangeHighlight: [
+              'AA','KK','QQ','JJ','TT','99','88','77','66','55','44','33','22',
+              'AKs','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s',
+              'AKo','AQo','AJo','ATo','A9o','A8o','A7o','A6o','A5o',
+              'KQs','KJs','KTs','K9s','K8s','K7s',
+              'KQo','KJo','KTo',
+              'QJs','QTs','Q9s','Q8s',
+              'QJo','QTo',
+              'JTs','J9s','J8s',
+              'JTo',
+              'T9s','T8s','T7s',
+              '98s','97s','96s',
+              '87s','86s',
+              '76s','75s',
+              '65s','64s',
+              '54s',
+            ],
+          },
+          {
+            type: 'range-grid',
+            content: 'BB defense range vs BTN open (~50%) — you\'re getting 3:1 odds and already invested 1BB:',
+            rangeHighlight: [
+              'AA','KK','QQ','JJ','TT','99','88','77','66','55','44','33','22',
+              'AKs','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s',
+              'AKo','AQo','AJo','ATo','A9o','A8o','A7o',
+              'KQs','KJs','KTs','K9s','K8s','K7s','K6s','K5s',
+              'KQo','KJo','KTo',
+              'QJs','QTs','Q9s','Q8s','Q7s',
+              'QJo','QTo','Q9o',
+              'JTs','J9s','J8s','J7s',
+              'JTo','J9o',
+              'T9s','T8s','T7s','T6s',
+              'T9o','T8o',
+              '98s','97s','96s','95s',
+              '98o','97o',
+              '87s','86s','85s',
+              '76s','75s','74s',
+              '65s','64s',
+              '54s','53s',
+            ],
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**3-Bet Ranges: Linear vs Polarized**\n\n**Linear 3-bet** (value-heavy): You 3-bet only premium hands — QQ+, AKs, AKo. Simple but exploitable because you always have strong hands.\n\n**Polarized 3-bet**: You 3-bet premiums (QQ+, AKo, AKs) AND some bluffs (A5s, A4s, T9s, 98s — hands with blockers/equity). You fold the middle of your range (AJo, KQs, 99). This is harder to exploit because you can have either the nuts or air.',
+          },
+          {
+            type: 'key-point',
+            content: 'These ranges are **defaults, not rules.** Against a tight-passive player, widen further. Against an aggressive 3-bettor, tighten your opening range. GTO ranges are baselines — exploit when you have reads.',
+          },
+        ],
+      },
     ],
   },
 
@@ -883,6 +1100,42 @@ export const MODULES: Module[] = [
               ],
             },
           },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**A second texture pair: Broadway vs Paired Low**\n\nA♠K♠Q♦ — **Highly Dynamic**: Three broadway cards, two spades create straight draws (JT, J9, T9), flush draws (two suited), and many two-pair combos. Both ranges interact heavily.\n\n2♥2♦7♣ — **Ultra-Static (Paired Low)**: The pair immediately reduces straight/flush possibilities. Few hands in either range hit this board significantly. The board will look nearly identical on most turns.',
+          },
+          {
+            type: 'board-demo',
+            content: 'Broadway-heavy, two-tone: dynamic — many draws possible, range interaction high',
+            cards: [
+              { rank: 'A', suit: 'spades' },
+              { rank: 'K', suit: 'spades' },
+              { rank: 'Q', suit: 'diamonds' },
+            ],
+          },
+          {
+            type: 'board-demo',
+            content: 'Paired low, rainbow: ultra-static — minimal draws, board changes little on most turns',
+            cards: [
+              { rank: '2', suit: 'hearts' },
+              { rank: '2', suit: 'diamonds' },
+              { rank: '7', suit: 'clubs' },
+            ],
+          },
+          {
+            type: 'table',
+            content: 'What makes boards static vs dynamic:',
+            tableData: {
+              headers: ['Factor', 'Makes board MORE static', 'Makes board MORE dynamic'],
+              rows: [
+                ['Connectivity', 'Gaps (A72, K82)', 'Runs (876, T98)'],
+                ['Suits', 'Rainbow (three different)', 'Monotone or two-tone'],
+                ['Card height', 'Low cards (2-7)', 'Middle or broadway cards'],
+                ['Pairs on board', 'Paired board (AA7, 772)', 'Unpaired board'],
+              ],
+            },
+          },
         ],
       },
       {
@@ -923,6 +1176,72 @@ export const MODULES: Module[] = [
                 ['You are capped', 'More bluff-catching, avoid bloating pots against nutted hands'],
               ],
             },
+          },
+        ],
+      },
+      {
+        id: 'module5-lesson4',
+        title: 'Equity Buckets: Categorizing Your Range',
+        estimatedMinutes: 10,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'Equity bucket', definition: 'A category grouping hands in your range by their relative equity strength on a given board' },
+          { term: 'Strong value', definition: 'The top ~5-10% of your range — nut hands and near-nut hands that want to build a large pot' },
+          { term: 'Bluff-catcher', definition: 'A medium-strength hand that has showdown value (beats bluffs) but is not strong enough to bet for value' },
+          { term: 'Air', definition: 'A hand with near-zero showdown value — loses to most of villain\'s range at showdown' },
+          { term: 'Protection bet', definition: 'A bet with a medium-strength hand to deny equity to draws and weaker holdings, rather than purely for value' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'A powerful way to think about strategy is to categorize every hand in your range into an **equity bucket**. Your bucket determines your natural action — bet, check-call, check-fold, or bluff.',
+          },
+          {
+            type: 'table',
+            content: 'The 5 equity buckets and their natural actions:',
+            tableData: {
+              headers: ['Bucket', 'Description', 'Typical action'],
+              rows: [
+                ['Strong value', 'Nuts or near-nuts — top ~5-10% of your range', 'Bet (size depends on texture and villain\'s range)'],
+                ['Thin value / medium strength', 'Strong made hand, probably best — top pair good kicker, overpairs', 'Bet small for value, or check to induce; tension between protection and deception'],
+                ['Draw', 'Not yet made but has equity — flush draws, straight draws, combo draws', 'Often bet (semi-bluff: fold equity + equity) or check-call (protect equity)'],
+                ['Bluff-catcher', 'Weak made hand — beats bluffs but loses to value bets', 'Check-call; rarely leads; goal is to reach showdown cheaply'],
+                ['Air', 'Near-zero showdown value — missed draws, no pair, weak overcards', 'Bluff with blocker selection, or give up'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Bucket distribution is range-dependent**\n\nOn A♦7♠2♣ (dry, ace-high board):\n• The **preflop raiser\'s** strong-value bucket is dense: AA, AK, AQ, AJ, AT, A7, A2. They have many top-pair+ hands.\n• The **big blind defender\'s** strong-value bucket is thin: only 77, 22 (sets). Most Ax hands were 3-bet preflop, so they have fewer.\n\nOn 8♣7♣6♦ (wet, connected board):\n• The **big blind\'s** draw bucket is dense: T9, 95, 54, plus many flush draws.\n• The **raiser\'s** draw bucket is weaker — they have overpairs (strong value bucket) but fewer connected hands.',
+          },
+          {
+            type: 'text',
+            content: 'The key insight: **knowing which bucket your hand belongs to tells you your natural action.** If your bucket is strong value on this board, bet. If bluff-catcher, check-call. If air with a blocker, consider bluffing. If air without blockers, give up.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$80',
+              stacks: '$200 effective',
+              position: 'BTN vs BB, single-raised pot',
+              action: 'Flop K♦8♠2♠. Hero holds J♠T♠ (flush draw + backdoor straight draw).',
+              board: [
+                { rank: 'K', suit: 'diamonds' },
+                { rank: '8', suit: 'spades' },
+                { rank: '2', suit: 'spades' },
+              ],
+            },
+            content: 'Bucket analysis: J♠T♠ on K♦8♠2♠ is a **strong draw** (9 spade outs for flush). No showdown value if checked down — this is not a bluff-catcher. Natural action: **semi-bluff bet** to apply fold equity while also having equity if called.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Buckets shift with each street\'s runout**\n\nJ♠T♠ on K♦8♠2♠:\n• Flop: Strong draw bucket → bet or check-call\n• Turn comes 3♥ (blank): Bucket shifts toward bluff-catcher/air (less equity, diminishing fold equity)\n• Turn comes Q♠ (flush completes): Bucket shifts to **strong value** → now bet for value\n\nYour hand\'s bucket assignment isn\'t fixed — the runout determines where you are.',
+          },
+          {
+            type: 'key-point',
+            content: 'Before deciding whether to bet, ask: "What bucket am I in?" Strong value → bet. Draw → semi-bluff or check-call. Bluff-catcher → check-call. Air with blockers → bluff. Air without blockers → give up.',
           },
         ],
       },
@@ -1019,6 +1338,53 @@ export const MODULES: Module[] = [
             calloutType: 'warning',
             content: 'Overbets are NOT "I feel strong" bets. They are **range-geometry bets** — only valid when your range has many more nutted hands than villain\'s range and villain\'s range is capped.',
           },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$100',
+              stacks: '$300 effective',
+              position: 'BTN vs BB, single-raised pot',
+              action: 'BTN c-bets 33% ($33) on A♦7♠2♣ — a dry, ace-high board with range advantage.',
+              board: [
+                { rank: 'A', suit: 'diamonds' },
+                { rank: '7', suit: 'spades' },
+                { rank: '2', suit: 'clubs' },
+              ],
+            },
+            content: '**Why 33%?** BTN has massive range advantage here (many Ax hands). The small bet applies pressure across the entire range cheaply — even weak hands like QJ, KQ, and T9 can profitably bet 33% to deny equity from BB\'s overcards and weak pairs. A large bet would be wasteful since villain has mostly weak, disconnected hands.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$100',
+              stacks: '$300 effective',
+              position: 'BTN vs BB, single-raised pot',
+              action: 'BTN bets 75% ($75) on 8♠7♠6♦ — a wet, connected board.',
+              board: [
+                { rank: '8', suit: 'spades' },
+                { rank: '7', suit: 'spades' },
+                { rank: '6', suit: 'diamonds' },
+              ],
+            },
+            content: '**Why 75%?** This board is dynamic — villain has many two pairs, straights, and flush draws. A small bet would be called very wide (little fold equity on coordinated boards), then villain draws to their equity cheaply. A larger bet forces villain to pay a high price with draws and creates more fold equity against hands that have already connected.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$350',
+              stacks: '$180 (villain has $180 behind)',
+              position: 'BTN vs BB, heads-up to the river',
+              action: 'River: Q♣ completes no draws. BTN overbets 150% ($525) all-in into $350 pot.',
+              board: [
+                { rank: 'A', suit: 'spades' },
+                { rank: 'K', suit: 'diamonds' },
+                { rank: 'J', suit: 'clubs' },
+                { rank: '4', suit: 'hearts' },
+                { rank: 'Q', suit: 'clubs' },
+              ],
+            },
+            content: '**Why overbet?** BTN has nut advantage on AKJxQ — the broadway completion strongly favors the preflop raiser\'s premium holdings (AA, KK, QQ, AK, AQ, KQ). To extract maximum value from hands like two pair or sets, and to make villain\'s bluff-catchers indifferent with a large bet. Overbets only make sense when your range\'s nut density is significantly higher than villain\'s.',
+          },
         ],
       },
       {
@@ -1089,6 +1455,71 @@ export const MODULES: Module[] = [
             type: 'callout',
             calloutType: 'warning',
             content: '**Beginner rule: avoid donk betting until you understand range shifts deeply.** Most beginner donk bets are information leaks — they give away hand strength without strategic purpose.',
+          },
+        ],
+      },
+      {
+        id: 'module6-lesson5',
+        title: '3-Bet Pot Postflop Strategy',
+        estimatedMinutes: 10,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'SPR (Stack-to-Pot Ratio)', definition: 'Effective stack size divided by the pot size entering postflop — determines commitment thresholds' },
+          { term: '3-bet pot (3BP)', definition: 'A pot where preflop action included a 3-bet (re-raise) and call, resulting in a larger pot and lower SPR than a single-raised pot' },
+          { term: 'Commitment threshold', definition: 'The SPR at which putting in all remaining chips becomes mathematically correct for strong hands; typically SPR < 4 for top pair and below SPR 2 for overpairs' },
+          { term: 'SRP (Single-raised pot)', definition: 'A pot with only one raise preflop — typically has SPR 8-12 at 100BB depth, giving more postflop flexibility' },
+        ],
+        sections: [
+          {
+            type: 'formula',
+            formulaLabel: 'Stack-to-Pot Ratio',
+            formula: 'SPR = Effective stack entering postflop ÷ Pot size entering postflop',
+          },
+          {
+            type: 'table',
+            content: 'SPR and its implications:',
+            tableData: {
+              headers: ['SPR', 'Typical scenario', 'Strategic implication'],
+              rows: [
+                ['< 2', 'Short-stacked, deep 3BP', 'Strong hands commit immediately; set-mining not profitable'],
+                ['2 – 4', '3-bet pots at 100BB', 'One large bet commits stack; strong hands bet/commit; bluffing is expensive'],
+                ['5 – 10', 'Single-raised pots', 'Multi-street flexibility; sets, draws, and made hands all have room to maneuver'],
+                ['> 10', 'Deep stack or small pots', 'Speculative hands (sets, suited connectors) gain implied odds premium'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why 3-bet pots are different**\n\nIn a typical 100BB game, if BTN 3-bets to 9BB and BB calls:\n• Pot entering flop: ~19BB\n• Effective stack: ~91BB\n• **SPR ≈ 91/19 ≈ 4.8**\n\nCompare to a single-raised pot (BTN opens 2.5BB, BB calls):\n• Pot entering flop: ~6BB\n• Effective stack: ~97BB\n• **SPR ≈ 16**\n\nLow SPR in 3BPs means strong hands must commit quickly — slow-playing is nearly eliminated.',
+          },
+          {
+            type: 'text',
+            content: 'In a 3-bet pot, **IP (in-position, usually the 3-bettor)** and **OOP (out-of-position, the caller)** play very differently:\n\n**IP player** has range advantage (premium holdings, strong hands). They can bet their value hands immediately, pot-control with medium strength, and apply relentless pressure.\n\n**OOP player** has a difficult decision on nearly every street. With SPR ~4-5, they must check-call strong hands (because donk-betting reveals strength and kills stack-to-pot leverage) or check-raise with their very strongest holdings.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$19 (entering flop)',
+              stacks: '$91 effective',
+              position: 'BTN is IP, BB is OOP. BTN had 3-bet to 9BB, BB called.',
+              action: 'Flop K♦7♠2♣. BB checks.',
+              board: [
+                { rank: 'K', suit: 'diamonds' },
+                { rank: '7', suit: 'spades' },
+                { rank: '2', suit: 'clubs' },
+              ],
+            },
+            content: 'BTN (IP) holds AA. SPR ≈ 4.8. **Decision: bet 40-50% pot.**\n\nWith SPR 4.8 and top overpair on a dry board, AA wants to build the pot. A 40% bet ($7.6) leaves ~SPR 2.7 on the turn — one more large bet commits the stack. Don\'t slow-play. The board is dry (villain rarely has 2-pair+ here), and protection from 7♠ draws is needed.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Low SPR and draws: a caution**\n\nIn a 3BP with SPR 4, even a strong flush draw (36% equity) is marginal vs a pot-sized bet. With SPR 4 and pot = $19, if villain bets $19 (pot-size):\n\nRequired equity = $19/($19+$19+$19) = 33%\n\nFlush draw has 36% equity — barely above break-even on direct pot odds, no implied odds benefit when SPR is already low. High-SPR implied odds disappear in 3BPs. Be cautious drawing in 3-bet pots.',
+          },
+          {
+            type: 'key-point',
+            content: '**In 3-bet pots: bet fast with strong hands, give up quickly with air, and be very selective with bluffs.** The low SPR punishes passive play with strong hands and makes bluffing expensive. When in doubt, simplify: bet or fold.',
           },
         ],
       },
@@ -1290,6 +1721,65 @@ export const MODULES: Module[] = [
           {
             type: 'key-point',
             content: '**Multiway rule:** Play more straightforwardly. Bet value-heavy, bluff less, avoid marginal stack-offs, respect raises. Prefer nut draws (flush draw with an Ace) over weak draws (gutshot with no backup).',
+          },
+        ],
+      },
+      {
+        id: 'module7-lesson6',
+        title: 'The Hand Review Framework',
+        estimatedMinutes: 12,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'Hand review', definition: 'The off-table practice of analyzing past decisions to identify mistakes, correct reasoning, and extract transferable lessons' },
+          { term: 'Spot taxonomy', definition: 'A specific, reusable way to categorize a hand situation by position, pot type, street, and board texture — defines what you\'re actually studying' },
+          { term: 'Decision point', definition: 'The specific moment in a hand where a non-obvious choice was made — the unit of analysis in hand review' },
+          { term: 'Leak', definition: 'A systematic error in your decision-making that costs you money repeatedly — the goal of hand review is to find and close leaks' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'Most poker improvement happens **off the table**. Playing more hands without reviewing them doesn\'t make you better — it makes your mistakes more ingrained. The players who improve fastest are the ones who review their decisions most carefully, not the ones who grind the most volume.',
+          },
+          {
+            type: 'step-list',
+            content: 'The 7-step hand review process:',
+            steps: [
+              '**Pick a specific spot** — not a random hand, but a recurring spot type. Example: "BTN c-bet on K-high dry boards." One spot reviewed deeply beats ten hands reviewed shallowly.',
+              '**Write down what you did and why** — articulate your actual decision reasoning. "I bet because I had top pair" is too vague. "I bet 33% because this board heavily favors my range and I want to deny equity cheaply" is a real reason.',
+              '**Identify the decision point(s)** — which street and which action had the highest uncertainty? That\'s the crux of the review.',
+              '**Reconstruct your range** — what hands can you plausibly have in this spot, after your preflop action? This is your range at the decision point.',
+              '**Reconstruct villain\'s range** — what does their action history reveal? Each bet, check, raise, or call eliminates portions of their range.',
+              '**Apply the relevant framework** — EV calculation, pot odds check, MDF calculation, board texture analysis, equity bucket categorization. Use the tools this course taught.',
+              '**Compare to a solver or training tool** — enter the spot in GTO Wizard or Simple Postflop. Note: (a) what you did, (b) what solver recommends, (c) the EV gap. Extract one invariant.',
+            ],
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Three common hand review mistakes:**\n\n1. **Reviewing results, not decisions** — "I lost the pot so I played badly." A correct fold that villain got lucky against is still a correct fold. Judge decisions on process, not outcome.\n\n2. **Only reviewing hands you played well** — confirmation bias. The most valuable reviews are the hands where you are genuinely unsure if you made the right call.\n\n3. **Being too vague** — "I should have bet the flop" is not actionable. "I should have bet 33% on this A-high dry board because I have range advantage and the check cedes equity to villain\'s gutshots" IS actionable.',
+          },
+          {
+            type: 'text',
+            content: 'The **spot taxonomy** is the most important concept in hand review. A spot is defined by:\n\n• **Position** (BTN vs BB, CO vs BTN, etc.)\n• **Pot type** (SRP = single-raised, 3BP = 3-bet pot)\n• **Street** (flop, turn, river)\n• **Board texture** (dry/wet, static/dynamic, paired/unpaired)\n• **Action sequence** (checked to, bet-called, bet-raised, etc.)\n\nOne thoroughly understood spot — with its strategy, its exceptions, and its invariants — is worth more than 100 hands reviewed as isolated incidents.',
+          },
+          {
+            type: 'scenario',
+            scenarioData: {
+              pot: '$12 (entering flop at 100BB)',
+              stacks: '$97 effective',
+              position: 'BTN vs BB, single-raised pot',
+              action: 'Flop K♦7♠2♣. BB checks. BTN bets $4 (33%). BB check-raises to $14.',
+              board: [
+                { rank: 'K', suit: 'diamonds' },
+                { rank: '7', suit: 'spades' },
+                { rank: '2', suit: 'clubs' },
+              ],
+            },
+            content: 'BTN holds A♦K♣ (top pair, top kicker). Apply the review framework: (1) BTN range has massive range advantage on K72r → c-bet is correct. (2) 33% is correct size on this dry board. (3) BB check-raise narrows BB\'s range to Kx, 77, 22, and some bluffs. (4) AK needs ~36% equity vs check-raising range to call. (5) AK is likely near 55-65% equity vs this range (ahead of most Kx, crushed by sets). Call is correct with top two unless you have specific reads suggesting BB only check-raises sets.',
+          },
+          {
+            type: 'key-point',
+            content: '**Review spots, not hands.** One spot, understood thoroughly — its GTO baseline, its exploitative deviations, and why — is worth more than 1,000 hands skimmed quickly. The question to ask: "What is the correct strategy for this spot type, and why did I deviate from it?"',
           },
         ],
       },
@@ -1518,6 +2008,358 @@ export const MODULES: Module[] = [
           {
             type: 'key-point',
             content: '**The hierarchy:** Rules → Math → Ranges → Game Theory → Solver Patterns → Human Exploits. The weak player asks: "What should I do with my hand?" The strong player asks: "What does my range want to do against villain\'s range on this texture, and how does their behavior let me deviate?"',
+          },
+        ],
+      },
+      {
+        id: 'module8-lesson6',
+        title: 'Bankroll Management & Variance',
+        estimatedMinutes: 10,
+        xpReward: 15,
+        keyTerms: [
+          { term: 'Bankroll', definition: 'The total amount of money set aside specifically for poker — separate from living expenses' },
+          { term: 'Buy-in', definition: 'The amount you bring to a cash game table (typically 100 big blinds) or pay to enter a tournament' },
+          { term: 'Downswing', definition: 'An extended period of losing results despite correct play — an inevitable feature of poker variance' },
+          { term: 'Variance', definition: 'The natural fluctuation of poker results around your true win rate — the reason even strong players can lose for extended periods' },
+          { term: 'Shot-taking', definition: 'Moving up in stakes temporarily with a portion of your bankroll to test if you can beat a higher level' },
+          { term: 'Risk of ruin', definition: 'The probability of losing your entire bankroll before variance corrects — managed by maintaining sufficient buy-ins' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'Even a consistently +EV player can go broke with an inadequate bankroll. Variance is real — extended losing periods happen to everyone. Bankroll management is the mechanism that keeps you alive long enough for your edge to manifest over thousands of hands.',
+          },
+          {
+            type: 'table',
+            content: 'Recommended minimum bankrolls by format:',
+            tableData: {
+              headers: ['Format', 'Conservative minimum', 'Recommended'],
+              rows: [
+                ['NL Cash (6-max online)', '20 buy-ins', '30 buy-ins'],
+                ['NL Cash (full ring, live)', '20 buy-ins', '25 buy-ins'],
+                ['Multi-table tournaments (MTT)', '100 buy-ins', '150-200 buy-ins'],
+                ['Spin & Go / Jackpot formats', '200 buy-ins', '300+ buy-ins'],
+                ['Sit & Go (9-player)', '50 buy-ins', '75 buy-ins'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why downswings are normal**\n\nA solid online cash player winning at 5bb/100 hands with typical variance can experience:\n• A 5 buy-in downswing — happens multiple times per year\n• A 10 buy-in downswing — happens once or twice per year\n• A 15 buy-in downswing — happens every 1-2 years\n\nWithout 25-30 buy-ins, a single 10 buy-in downswing forces a move down in stakes — disrupting game selection, confidence, and momentum. **The bankroll exists to absorb variance, not to be risked entirely.**',
+          },
+          {
+            type: 'step-list',
+            content: 'Shot-taking protocol — how to move up stakes responsibly:',
+            steps: [
+              '**Build the bankroll** — have 30+ buy-ins at your current stake before attempting the next level.',
+              '**Set a shot limit** — allocate exactly 5 buy-ins for the shot. If you lose them, drop back down immediately without debate.',
+              '**Maintain a safety net** — keep 20+ buy-ins at your current (lower) stake as a fallback. Moving up does not mean abandoning your current game.',
+              '**Evaluate after 20+ sessions** — results over fewer sessions are meaningless. Give the sample size time to develop before declaring success or failure.',
+              '**Repeat** — if the shot succeeds and you have 30 buy-ins at the new stake, that\'s your base. If not, restock at the lower stake and try again.',
+            ],
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Underbankrolled players make systematically worse decisions.**\n\nWhen a single session loss represents a significant portion of your bankroll, fear enters your decisions — you fold hands you should call, you don\'t bluff when bluffing is correct, and you leave winning sessions early out of anxiety.\n\nA proper bankroll removes the fear. You stop playing your stack and start playing correctly.',
+          },
+          {
+            type: 'key-point',
+            content: '**Bankroll management is risk management.** The poker formula — make +EV decisions consistently — works over thousands of hands. Your only job is to stay in the game long enough for the math to work out. A properly sized bankroll is the tool that makes that possible.',
+          },
+        ],
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MODULE 9: The Study Table
+  // ──────────────────────────────────────────────────────────────────────────
+  {
+    id: 'module9',
+    title: 'The Study Table',
+    tagline: 'Become a serious student — solver literacy, push/fold, game selection, mental game, and study systems.',
+    icon: '📚',
+    weekEquivalent: 'Weeks 13-14',
+    badgeId: 'study-master',
+    belt: 'black',
+    color: '#6366f1',
+    treatiseSections: [28, 29, 30, 31, 32, 33],
+    lessons: [
+      {
+        id: 'module9-lesson1',
+        title: 'Reading Solver Output',
+        estimatedMinutes: 12,
+        xpReward: 20,
+        keyTerms: [
+          { term: 'Node EV', definition: 'The expected value of a specific action at a specific decision point in a game tree — how many chips that action earns on average' },
+          { term: 'Mixed strategy', definition: 'A solver recommendation to use multiple actions with a specific hand, at defined frequencies — reflects near-equal EV between options' },
+          { term: 'EV loss', definition: 'The cost in expected value of deviating from the optimal solver strategy at a given node' },
+          { term: 'Frequency', definition: 'In solver output, the percentage of the time a given action should be taken with a given hand' },
+          { term: 'Invariant', definition: 'A strategic principle that holds broadly across many similar spots — more useful than memorizing specific frequencies' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'Modern solvers (GTO Wizard, PioSOLVER, Simple Postflop) have transformed how serious players study poker. Instead of arguing from intuition, players can now compare their decisions against computed equilibrium strategies. But solver output can be confusing without a framework for reading it.',
+          },
+          {
+            type: 'table',
+            content: 'Solver output anatomy — what each element means:',
+            tableData: {
+              headers: ['Output element', 'What it means', 'How to use it'],
+              rows: [
+                ['Action frequency (e.g., "Bet 66%: 38%")', '38% of your range should bet 66% pot in this spot', 'Tells you the overall strategy tendency — is this a check-heavy or bet-heavy spot?'],
+                ['Hand EV (e.g., "AK♠: 1.42bb")', 'AK♠ expects to earn 1.42bb in this spot on average', 'Compare EVs of different hands in your range to see which prefer betting vs checking'],
+                ['EV loss (e.g., "−0.08bb")', 'You lose 0.08bb by deviating from optimal with this hand', 'Small EV loss = both actions are close; large EV loss = you\'re making a significant mistake'],
+                ['Range breakdown', 'Which hand categories prefer each action', 'Lets you understand WHY certain hands prefer certain actions — builds transferable understanding'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Mixed strategies are not randomness**\n\nWhen a solver says "AK: bet 60%, check 40%" on a given board, it does NOT mean "randomly bet 60% of the time."\n\nIt means that with this specific hand, on this specific board, betting and checking have **nearly identical expected value**. The solver mixes to prevent exploitation — if you always bet AK here, a sharp opponent adjusts.\n\nIn practice, humans can\'t execute precise mixing frequencies. The takeaway: when solver says near-50/50 mixing, **both actions are roughly correct** — choose based on your read of the specific villain.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Don\'t memorize frequencies — extract invariants**\n\n"Bet 33% on A♦7♠2♣ with Q♣J♠ exactly 43% of the time" is not learnable and not useful.\n\n"Ace-high dry boards heavily favor the preflop raiser, who can bet their full range cheaply" IS an invariant — it applies to all A7x and A8x dry boards, all positions, and helps you make decisions in spots you\'ve never studied.\n\nFor every solver node you study, ask: "What **general principle** does this illustrate?"',
+          },
+          {
+            type: 'step-list',
+            content: 'How to study a solver node (5-step process):',
+            steps: [
+              '**Load the spot** — specify position, stack depth (100BB, 40BB, etc.), and board. Be precise: BTN vs BB, 100BB, SRP, K♦7♠2♣.',
+              '**Read the overall strategy** — which action dominates? If solver checks 80% of the time IP, this is a check-back-heavy spot. That\'s the first invariant.',
+              '**Find your highest-EV-loss hands** — sort hands by EV loss. The hands where you most deviate from optimal are your leaks in this spot.',
+              '**Ask "why?"** — for each high-EV-loss hand, ask why solver prefers the other action. What property of this hand makes the other action better? This question builds understanding.',
+              '**Write one invariant** — before closing the solver, write one principle you extracted. "Strong made hands want to protect on dynamic boards even at low SPR" or "Nut flush draws prefer semi-bluffing over check-calling when IP."',
+            ],
+          },
+          {
+            type: 'key-point',
+            content: '**Solvers are microscopes, not rulebooks.** Use them to look at strategic situations in detail. Extract principles. Don\'t mistake the output for a memorizable recipe — it\'s a tool for understanding, not a script to follow.',
+          },
+        ],
+      },
+      {
+        id: 'module9-lesson2',
+        title: 'Short-Stack Push/Fold Strategy',
+        estimatedMinutes: 10,
+        xpReward: 20,
+        keyTerms: [
+          { term: 'Push/fold', definition: 'The pre-flop strategy used at short stacks (<15BB) where the only options are shoving all-in or folding' },
+          { term: 'Nash push range', definition: 'The mathematically solved set of hands that should be shoved from each position at a given stack depth to maximize EV against unexploitable calling ranges' },
+          { term: 'Calling range', definition: 'The set of hands that should call a shove — tighter than push ranges because calling risks elimination while shoving applies fold equity pressure' },
+          { term: 'ICM pressure', definition: 'Independent Chip Model pressure — the tournament context where chip EV ≠ dollar EV, causing players to tighten ranges near the bubble or pay jumps' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'When your stack falls below **15 big blinds**, the game tree simplifies dramatically. Postflop play becomes nearly irrelevant because any commitment on the flop commits your stack. Pre-flop decisions become binary: **shove all-in or fold** (and sometimes call a shove).',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why push/fold?**\n\nWith 10BB and a standard open of 2.5BB, you\'d have 7.5BB behind — not enough to fold to a 3-bet without being pot-committed. The solution: skip the open-raise entirely and shove.\n\nShoving also applies fold equity that a min-raise doesn\'t — a 10BB shove forces villain to risk more than a 2.5BB open. This folds many marginal hands that would call a small raise.',
+          },
+          {
+            type: 'table',
+            content: 'Approximate Nash push ranges by position and stack depth (tournament, no ante):',
+            tableData: {
+              headers: ['Stack', 'UTG (tightest)', 'BTN (widest)', 'SB vs BB'],
+              rows: [
+                ['4BB', 'Any two cards', 'Any two cards', 'Any two cards'],
+                ['7BB', 'TT+, AJs+, AQo+', '55+, A7s+, A9o+, KTs+, QJs', '44+, A5s+, A8o+, K9s+'],
+                ['10BB', 'JJ+, ATs+, AJo+', '33+, A2s+, A7o+, K9s+, QTs+', '22+, A2s+, A5o+, K6s+'],
+                ['15BB', 'QQ+, AKs, AQs', '22+, A2s+, most suited hands', '22+, A2s+, wide range'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Calling ranges are tighter than push ranges**\n\nWhy? When you shove, you apply fold equity — villain might fold a better hand. When you call a shove, you get no fold equity. You need raw equity to justify calling.\n\nFor example, with 10BB in the BB facing a UTG shove, you need ~40% equity to call profitably (pot is ~21BB, call costs ~9BB).\n\n22 vs UTG\'s range (~TT+, ATs+, AJo+): approximately 36% equity. Close, but slightly -EV. Most charts fold 22 here. KQo has ~41% equity — a call.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**ICM tightens everything near the bubble**\n\nWith 10BB on the money bubble (e.g., 10 players left, 9 get paid):\n• Shoving correctly with a borderline hand and losing busts you without any money\n• Even a +chip-EV shove can be -$EV if survival has high value\n\nPrinciple: **tighten push AND call ranges near the bubble** relative to pure Nash. The tighter the bubble (fewer spots to the money), the more you tighten. When you\'re already safely in the money, return to Nash.',
+          },
+          {
+            type: 'key-point',
+            content: '**At less than 15BB: shove or fold. The math is essentially solved.** Use Nash charts as your baseline. Deviate tighter near the bubble (ICM pressure), and deviate wider if the entire table is folding too much (exploitative adjustment).',
+          },
+        ],
+      },
+      {
+        id: 'module9-lesson3',
+        title: 'Rake, Game Selection & Table Dynamics',
+        estimatedMinutes: 10,
+        xpReward: 20,
+        keyTerms: [
+          { term: 'Rake', definition: 'The percentage of each pot taken by the house (casino or poker site) as their fee — typically 3-5% of pot online, capped at 1-3BB' },
+          { term: 'Effective rake', definition: 'The total rake impact on your win rate — high rake at small stakes can eliminate a theoretical edge entirely' },
+          { term: 'VPIP', definition: 'Voluntarily Put money In Pot — the percentage of hands a player plays; >35% suggests a loose player, <20% a very tight player' },
+          { term: 'Game selection', definition: 'Choosing which tables, stakes, and formats to play to maximize your win rate — often more impactful than strategy improvements' },
+          { term: 'Seat selection', definition: 'Choosing your seat at the table strategically — ideally with the weakest or most exploitable players to your right' },
+        ],
+        sections: [
+          {
+            type: 'formula',
+            formulaLabel: 'Effective hourly rate',
+            formula: 'Hourly rate = (winrate in bb/100) × (hands per hour) × (bb value in $) − rake paid per hour',
+          },
+          {
+            type: 'text',
+            content: 'Rake is the poker room\'s cut. Online, it\'s typically **3-5% of the pot**, capped at 1-3 big blinds. Live games often take **5-10%** with higher caps. This seems small, but over thousands of hands, rake significantly reduces win rates — and at microstakes, it can eliminate an edge entirely.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'warning',
+            content: '**Rake changes optimal strategy**\n\nIn rake-free environments (or when studying solvers), some marginal preflop calls are slightly +EV. At 5% rake, those same calls can become -EV because villain\'s bet is partially "taxed."\n\nAt high-rake stakes:\n• Tighten preflop ranges (especially calling ranges) slightly\n• Bet more often when you have an edge — don\'t slow-play, as slow play increases the number of rake-generating pots you win nothing from\n• Win bigger pots (premium hands) to offset the rake burden',
+          },
+          {
+            type: 'table',
+            content: 'Game selection signals — how to identify soft vs hard tables:',
+            tableData: {
+              headers: ['Signal', 'Soft game (good for you)', 'Hard game (avoid)'],
+              rows: [
+                ['Average VPIP', '>35% (players playing many hands)', '<22% (everyone waiting for premiums)'],
+                ['Preflop 3-bet%', '<5% (passive preflop)', '>10% (lots of 3-betting — aggressive)'],
+                ['Limping frequency', 'High (players limp into pots)', 'Near zero (everyone raises or folds)'],
+                ['Post-flop aggression', 'Low (passive calling stations)', 'High (frequent raises, probes, squeezes)'],
+                ['Stack size variation', 'Mix of short/deep stacks', 'All players at 100BB (experienced)'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'tip',
+            content: '**Seat selection matters**\n\nIdeal seating:\n• Sit **to the left** of the loosest/most aggressive player — you act after them, so their aggression hurts you less and you can isolate them more easily.\n• Sit **to the right** of the passive fish — you\'re in position against them, and you can isolate their limps.\n\nIf you can\'t get the ideal seat, wait for a seat change or table change rather than playing in a bad seat for hours.',
+          },
+          {
+            type: 'key-point',
+            content: '**Most players study strategy obsessively and ignore game selection entirely.** A winning player who picks the best available table will earn far more than one who plays excellent poker at a tough table. Game selection is the asymmetric edge that most players leave on the table.',
+          },
+        ],
+      },
+      {
+        id: 'module9-lesson4',
+        title: 'Mental Game & Tilt Prevention',
+        estimatedMinutes: 10,
+        xpReward: 20,
+        keyTerms: [
+          { term: 'Tilt', definition: 'A state of emotional or cognitive impairment that causes suboptimal decision-making at the poker table — often triggered by bad beats, coolers, or extended losing' },
+          { term: 'A-game', definition: 'Your best possible decision-making state — when you\'re focused, thinking clearly, and executing your strategy optimally' },
+          { term: 'C-game', definition: 'Your worst decision-making state — emotionally impaired, making systematic errors, often triggered by tilt, fatigue, or frustration' },
+          { term: 'Results-oriented thinking', definition: 'Evaluating decisions based on their outcome rather than their process — the most common and damaging cognitive leak in poker' },
+          { term: 'Stop-loss', definition: 'A pre-set session loss limit that triggers you to quit for the day, preventing tilt-driven deeper losses' },
+        ],
+        sections: [
+          {
+            type: 'table',
+            content: 'Tilt taxonomy — types, triggers, and symptoms (based on Jared Tendler\'s framework):',
+            tableData: {
+              headers: ['Tilt type', 'Common trigger', 'Behavioral symptom'],
+              rows: [
+                ['Results tilt', 'Bad beats, coolers, losing sessions', 'Playing too many hands trying to "recover" losses'],
+                ['Injustice tilt', 'Feeling cheated by luck or dealer', 'Overbluffing, calling down too wide, verbal frustration'],
+                ['Entitlement tilt', '"I deserve to win this pot"', 'Refusing to fold strong hands, making hero calls out of ego'],
+                ['Desperation tilt', 'Deep losing session, almost broke', 'Over-shoving, chasing losses with larger bets'],
+                ['Boredom tilt', 'Passive game, few good hands', 'Playing weak hands for action, making creative plays without justification'],
+                ['Confidence tilt', 'Extended winning followed by loss', 'Overestimating edge, playing above bankroll, ignoring fundamentals'],
+              ],
+            },
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**The A-game / C-game model (Jared Tendler)**\n\nEvery player has:\n• An **A-game** — your best possible strategy execution\n• A **C-game** — your worst (tilt-impaired, exhausted, unfocused)\n• A **B-game** — the average of your full range\n\nMental game work is not about pushing your A-game ceiling higher. It\'s about **raising your C-game floor** — so that even on bad days, you don\'t leak chips through tilt, bad decisions, or emotional play.\n\nThe biggest financial difference between a good and great player is often how bad their C-game is, not how good their A-game is.',
+          },
+          {
+            type: 'step-list',
+            content: 'Tilt prevention protocol:',
+            steps: [
+              '**Set a stop-loss before each session** — decide in advance: "If I lose X buy-ins, I\'m done for today." Remove the decision from your emotional state.',
+              '**After a bad beat, pause before acting** — take 30-60 seconds before clicking or acting. The beat is irrelevant to the next decision.',
+              '**Separate decisions from outcomes** — ask: "Was my decision correct?" A correct fold that got bad-beat is still correct. Judge yourself on process, not results.',
+              '**Use the session reset** — if you feel tilt symptoms (elevated heart rate, irritation, playing faster), step away. Walk, breathe, reset. Return only when your decision-making is clear.',
+              '**Review C-game sessions** — after sessions where you know you tilted, review what triggered it. Pattern recognition lets you catch tilt earlier in the future.',
+            ],
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Results-oriented thinking is the deepest leak**\n\nIt sounds like: "I should have folded — I lost the pot."\n\nBut if your fold was wrong at the time of the decision (given what you knew), the loss is irrelevant to the correctness of your choice. Poker is a game of repeated decision-making. Over thousands of decisions, correct process generates positive results.\n\nThe antidote: evaluate every decision by asking "Given my information and ranges at the time, was this the highest-EV action?" That question is answerable. "Should I have played differently to avoid losing this pot?" is not — the outcome is unknowable in advance.',
+          },
+          {
+            type: 'key-point',
+            content: '**Variance keeps bad players at the table.** If you won every time you had the best hand, bad players would quit and there would be no poker economy. Variance is not your enemy — it\'s the mechanism that makes the game profitable. Your job is to make correct decisions and let variance resolve over time.',
+          },
+        ],
+      },
+      {
+        id: 'module9-lesson5',
+        title: 'Building Your Study Routine',
+        estimatedMinutes: 12,
+        xpReward: 20,
+        keyTerms: [
+          { term: 'Study routine', definition: 'A structured, recurring schedule for off-table work — balancing play volume, hand review, and solver/training study' },
+          { term: 'Volume', definition: 'The number of hands played — necessary for generating data and building pattern recognition, but insufficient for improvement without review' },
+          { term: 'Spot taxonomy', definition: 'A specific hand situation defined by position, pot type, street, and board texture — the unit of effective study' },
+          { term: 'Solver study', definition: 'Systematic use of GTO solvers to analyze specific spots, extract invariants, and identify decision errors' },
+        ],
+        sections: [
+          {
+            type: 'table',
+            content: 'The three pillars of poker improvement:',
+            tableData: {
+              headers: ['Pillar', 'What it develops', 'Typical time allocation'],
+              rows: [
+                ['Volume (play)', 'Pattern recognition, real-time decision speed, reads on opponents', '50-60% of poker time'],
+                ['Hand review', 'Finding leaks, identifying systematic errors, understanding specific mistakes', '25-30% of poker time'],
+                ['Structured study', 'Solver literacy, theory depth, invariant extraction, strategic understanding', '15-20% of poker time'],
+              ],
+            },
+          },
+          {
+            type: 'step-list',
+            content: 'Daily review routine (15-30 minutes after each session):',
+            steps: [
+              '**Tag hands during play** — when you feel uncertain, mark the hand. Most HUD software has a hand-tagging feature; live players can note the key spots.',
+              '**Write the spot taxonomy** — for each tagged hand, write: position, pot type (SRP/3BP), street, board, action sequence. This is the "address" of the spot.',
+              '**Articulate your reasoning** — 2-3 sentences: "I bet/checked/called because..." Be specific about your read and logic.',
+              '**Estimate correctness** — give it a gut-check score: "Confident I was right," "Probably right," "Genuinely unsure," "Probably wrong." The "genuinely unsure" hands go to solver study.',
+              '**Prioritize flagged hands** — don\'t try to review everything. The high-uncertainty hands are where the most learning lives.',
+            ],
+          },
+          {
+            type: 'step-list',
+            content: 'Weekly solver study routine (1-2 hours):',
+            steps: [
+              '**Pick ONE spot** from your flagged list — not a random hand, but a specific, recurring spot type. "BTN vs BB single-raised pot, K-high dry flop c-bet."',
+              '**Load it in GTO Wizard or Simple Postflop** — set the parameters precisely.',
+              '**Study the node thoroughly** — read overall strategy, find the 3-5 hands with highest EV loss, ask "why" for each.',
+              '**Extract 1-2 invariants** — write them in your study log. "K-high dry boards are c-bet-heavy for BTN at all sizes" or "Medium pairs want to check-back to control pot size on dynamic boards."',
+              '**Review your study log weekly** — re-read all invariants from the past month. Repetition builds the mental models that show up at the table.',
+            ],
+          },
+          {
+            type: 'callout',
+            calloutType: 'tip',
+            content: '**Recommended tools at each stage:**\n\n• **Beginners**: GTO Wizard free tier (training games, range exploration), Holdem Resources Calculator (free Nash push/fold)\n• **Intermediate**: GTO Wizard full subscription (solver + hand history import), ICMIZER (tournament ICM calculations)\n• **Advanced**: PioSOLVER or Simple Postflop (full solver for custom tree building), Solver sharing communities (pre-solved spot libraries)',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Study log template** — copy this and use it weekly:\n\n| Date | Spot taxonomy | What I did | Solver recommendation | EV loss | Invariant extracted |\n|---|---|---|---|---|---|\n| 2024-01-15 | BTN vs BB, 100BB, SRP, K72r, c-bet decision | Bet 33% | Bet 33% (optimal) | 0 | K-high dry boards: BTN should bet full range small |\n| 2024-01-16 | BTN vs BB, 100BB, SRP, T98ss, c-bet decision | Bet 75% | Check 65% of range | −0.2bb | Wet boards with BB range advantage: BTN checks more |',
+          },
+          {
+            type: 'key-point',
+            content: '**The players who improve fastest are the ones who review most carefully, not the ones who play most volume.** Volume without review is just practicing your existing mistakes at high reps. One hour of focused review finds and fixes more leaks than 10 hours of unreviewed play.',
           },
         ],
       },

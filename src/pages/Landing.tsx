@@ -76,9 +76,93 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Stats bar */}
+      <section className="max-w-4xl mx-auto px-4 py-4">
+        <div className="border-y border-[#2a4a30] py-4 flex flex-wrap justify-center gap-6 text-sm text-[#9db89f]">
+          {[
+            { value: '40+', label: 'lessons' },
+            { value: '80+', label: 'quiz questions' },
+            { value: '9', label: 'modules' },
+            { value: '200+', label: 'key terms' },
+          ].map(({ value, label }) => (
+            <div key={label} className="flex items-baseline gap-1.5">
+              <span className="text-[#c9a227] font-bold text-lg">{value}</span>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Built on Acevedo's treatise */}
+      <section className="max-w-4xl mx-auto px-4 py-10">
+        <div className="bg-[#162b1a] border border-[#c9a227]/20 rounded-2xl p-8">
+          <div className="text-xs text-[#9db89f] uppercase tracking-wider mb-3">The intellectual foundation</div>
+          <blockquote className="text-[#f0ebe0] text-xl italic leading-relaxed mb-3">
+            "The correct target: Become a solver-literate, range-based, exploit-capable poker decision maker."
+          </blockquote>
+          <p className="text-[#9db89f] text-sm mb-6">
+            — distilled from Michael Acevedo's <em>Modern Poker Theory</em> (2019, D&amp;B Publishing)
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                title: 'Elements of Theory',
+                desc: 'EV, equity, Nash equilibrium, GTO vs exploitative, MDF, combinatorics, modern software.',
+              },
+              {
+                title: 'Preflop Theory & Practice',
+                desc: 'Opening ranges, 3-bet pots, push/fold, stack depth, tournament ICM, bankroll and variance.',
+              },
+              {
+                title: 'Postflop Theory & Practice',
+                desc: 'Equity buckets, bet sizing, board textures, c-betting, turn barrels, and river abstract models.',
+              },
+            ].map(({ title, desc }) => (
+              <div key={title} className="bg-[#0d1f13] border border-[#2a4a30] rounded-lg p-4">
+                <div className="text-[#c9a227] font-semibold text-sm mb-2">{title}</div>
+                <p className="text-[#9db89f] text-xs leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* What this course covers */}
+      <section className="max-w-4xl mx-auto px-4 py-6">
+        <h2 className="text-[#f0ebe0] text-2xl font-bold mb-4">What You'll Master</h2>
+        <div className="overflow-x-auto rounded-xl border border-[#2a4a30]">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-[#162b1a]">
+                <th className="px-4 py-2.5 text-left text-[#9db89f] font-medium border-b border-[#2a4a30]">Topic</th>
+                <th className="px-4 py-2.5 text-left text-[#9db89f] font-medium border-b border-[#2a4a30] hidden sm:table-cell">Where</th>
+                <th className="px-4 py-2.5 text-left text-[#9db89f] font-medium border-b border-[#2a4a30]">Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { topic: 'Range thinking', where: 'Module 2', why: 'The foundational mental upgrade — stop thinking in hands' },
+                { topic: 'Combinatorics & EV', where: 'Module 3', why: 'Every decision is a math problem; learn to calculate it' },
+                { topic: 'Position & stack depth', where: 'Module 4', why: 'Context that changes which hands to play and how' },
+                { topic: 'Board textures', where: 'Modules 5–6', why: 'Reading the battlefield before you act' },
+                { topic: 'Turn & river play', where: 'Module 7', why: 'Where pots are won and lost' },
+                { topic: 'Exploitation', where: 'Module 8', why: 'Where the real money is — punishing opponent errors' },
+                { topic: 'Solver literacy & study', where: 'Module 9', why: 'How to keep improving beyond this course' },
+              ].map((row, ri) => (
+                <tr key={row.topic} className={ri % 2 === 0 ? 'bg-[#0d1f13]' : 'bg-[#162b1a]/50'}>
+                  <td className="px-4 py-2.5 text-[#f0ebe0] font-medium border-b border-[#2a4a30]/50">{row.topic}</td>
+                  <td className="px-4 py-2.5 text-[#c9a227] text-xs border-b border-[#2a4a30]/50 hidden sm:table-cell">{row.where}</td>
+                  <td className="px-4 py-2.5 text-[#9db89f] border-b border-[#2a4a30]/50">{row.why}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* Module preview */}
       <section className="max-w-4xl mx-auto px-4 py-10">
-        <h2 className="text-[#f0ebe0] text-2xl font-bold mb-6">8 Modules, Zero to Dangerous</h2>
+        <h2 className="text-[#f0ebe0] text-2xl font-bold mb-6">9 Modules, Zero to Dangerous</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {MODULES.map(module => {
             const lessonIds = module.lessons.map(l => l.id);
