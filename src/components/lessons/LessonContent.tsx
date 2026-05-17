@@ -48,6 +48,30 @@ const CALLOUT_STYLES = {
     label: '✅ Quick Summary',
     labelColor: 'text-[#4ade80]',
   },
+  definition: {
+    border: 'border-blue-400',
+    bg: 'bg-blue-900/20',
+    label: '📐 Definition',
+    labelColor: 'text-blue-400',
+  },
+  theorem: {
+    border: 'border-purple-400',
+    bg: 'bg-purple-900/20',
+    label: '📜 Theorem',
+    labelColor: 'text-purple-400',
+  },
+  proof: {
+    border: 'border-slate-400',
+    bg: 'bg-slate-900/20',
+    label: '🔍 Proof',
+    labelColor: 'text-slate-300',
+  },
+  lemma: {
+    border: 'border-amber-400',
+    bg: 'bg-amber-900/20',
+    label: 'Lemma',
+    labelColor: 'text-amber-400',
+  },
 };
 
 export function LessonContent({ sections }: Props) {
@@ -64,11 +88,13 @@ export function LessonContent({ sections }: Props) {
 
           case 'callout': {
             const style = CALLOUT_STYLES[section.calloutType ?? 'concept'];
+            const isProof = section.calloutType === 'proof';
             return (
               <div key={i} className={`border-l-4 ${style.border} ${style.bg} rounded-r-lg p-4`}>
                 <div className={`text-sm font-bold mb-2 ${style.labelColor}`}>{style.label}</div>
                 <div className="text-[#f0ebe0] text-sm leading-relaxed whitespace-pre-line">
                   {renderText(section.content ?? '')}
+                  {isProof && <span className="float-right text-slate-300 font-bold">∎</span>}
                 </div>
               </div>
             );

@@ -54,7 +54,7 @@ export interface LessonSection {
   tableData?: TableData;
   formula?: string;
   formulaLabel?: string;
-  calloutType?: 'concept' | 'example' | 'warning' | 'tip';
+  calloutType?: 'concept' | 'example' | 'warning' | 'tip' | 'definition' | 'theorem' | 'proof' | 'lemma';
   steps?: string[];
   scenarioData?: ScenarioData;
 }

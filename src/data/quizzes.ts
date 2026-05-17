@@ -728,6 +728,101 @@ export const QUIZZES: Record<string, QuizQuestion[]> = {
     },
   ],
 
+  module10: [
+    {
+      id: 'm10q1', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'In an extensive form game, what is an "information set"?',
+      options: [
+        { id: 'a', text: 'The set of all terminal nodes in the game tree' },
+        { id: 'b', text: 'A set of nodes a player cannot distinguish between — they know which set they\'re in, not which specific node' },
+        { id: 'c', text: 'The complete history of actions taken by all players' },
+        { id: 'd', text: 'The probability distribution over opponent hole card combinations' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'An information set captures the core of imperfect information: you know which information set you\'re in (e.g., you know your own cards and the board), but not which specific node (you don\'t know opponent\'s hole cards). Strategies in extensive form games are functions from information sets to actions.',
+    },
+    {
+      id: 'm10q2', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'The Indifference Principle states that if a player mixes between two actions in a Nash equilibrium, then those two actions must have:',
+      options: [
+        { id: 'a', text: 'Equal frequency' },
+        { id: 'b', text: 'Equal expected utility (EV)' },
+        { id: 'c', text: 'Positive regret' },
+        { id: 'd', text: 'Different pot odds requirements' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'By the Indifference Principle (proved via contradiction): if EV(a) ≠ EV(b), player i could shift all probability mass to the higher-EV action and strictly improve, contradicting Nash equilibrium. Therefore equal mixing ↔ equal EV.',
+    },
+    {
+      id: 'm10q3', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'Von Neumann\'s Minimax Theorem implies that a GTO (Nash equilibrium) strategy in poker:',
+      options: [
+        { id: 'a', text: 'Maximizes your winnings against all opponent strategies' },
+        { id: 'b', text: 'Minimizes the maximum amount your opponent can earn against you, regardless of their strategy' },
+        { id: 'c', text: 'Is only optimal against other GTO players' },
+        { id: 'd', text: 'Requires knowing your opponent\'s hand' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'GTO = minimax strategy. It minimizes the maximum your opponent can earn against you. This doesn\'t maximize your winnings — it just guarantees you cannot be systematically exploited. Against weaker opponents, exploitative deviations from GTO earn more.',
+    },
+    {
+      id: 'm10q4', moduleId: 'module10', type: 'numeric-input', difficulty: 3, xpReward: 15,
+      prompt: 'Pot = $100. Villain bets $50 on the river. Using the MDF formula derived from Nash equilibrium, what is the minimum percentage of your range you must continue with?',
+      unit: '%',
+      correctAnswer: 67,
+      tolerance: 1,
+      hint: 'MDF = P/(P+B). P = 100, B = 50. Compute and express as a percentage.',
+    },
+    {
+      id: 'm10q5', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'In the river bluffing game equilibrium, if the pot is $120 and IP bets $80, what is the optimal bluff-to-value ratio for IP?',
+      options: [
+        { id: 'a', text: '80/120 = 2:3 (40% bluffs per value hand)' },
+        { id: 'b', text: '80/200 = 2:5 (40% bluffs, or ratio 2:3 bluffs per value hand)' },
+        { id: 'c', text: 'B/(P+B) = 80/200 = 40% bluffs per total bets, or bluff/value ratio = 2:3' },
+        { id: 'd', text: '1:1 (always equal bluffs and value)' },
+      ],
+      correctOptionId: 'c',
+      explanation: 'Bluff-to-value ratio = B/(P+B) = 80/(120+80) = 80/200 = 0.4. So for every value combo, you should have 0.4 bluff combos (or equivalently, 40% of your bets are bluffs). This is derived from the double indifference condition at Nash equilibrium.',
+    },
+    {
+      id: 'm10q6', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'Nash\'s existence theorem (1950) guarantees:',
+      options: [
+        { id: 'a', text: 'A unique GTO strategy exists for every poker format' },
+        { id: 'b', text: 'At least one Nash equilibrium in mixed strategies exists for every finite game' },
+        { id: 'c', text: 'The game value is unique and computable in polynomial time' },
+        { id: 'd', text: 'Players who deviate from Nash equilibrium will always lose money' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Nash\'s theorem guarantees existence of at least one Nash equilibrium in mixed strategies for any finite game. It says nothing about uniqueness of strategies (though the game VALUE is unique in zero-sum games by the minimax theorem), computability, or consequences of deviation.',
+    },
+    {
+      id: 'm10q7', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'In Counterfactual Regret Minimization (CFR), which strategy converges to Nash equilibrium?',
+      options: [
+        { id: 'a', text: 'The strategy used in the final iteration' },
+        { id: 'b', text: 'The strategy used in the iteration with the lowest regret' },
+        { id: 'c', text: 'The average strategy across all iterations' },
+        { id: 'd', text: 'Any individual iteration\'s strategy after sufficient training' },
+      ],
+      correctOptionId: 'c',
+      explanation: 'In CFR, the current strategy oscillates and does not converge. The AVERAGE strategy (time-average across all T iterations) converges to Nash equilibrium, with average regret bounded by O(1/√T). This is why solver output represents the accumulated average, not the final iteration\'s strategy.',
+    },
+    {
+      id: 'm10q8', moduleId: 'module10', type: 'multi-choice', difficulty: 3, xpReward: 15,
+      prompt: 'Why do poker solvers use "abstraction" when computing GTO strategies?',
+      options: [
+        { id: 'a', text: 'To make the results easier for humans to understand' },
+        { id: 'b', text: 'Because full NLHE has ~10^160 game tree nodes — too large for exact CFR — so bet sizes and ranges must be discretized/bucketed' },
+        { id: 'c', text: 'Because GTO strategies don\'t exist for the full game' },
+        { id: 'd', text: 'To speed up convergence by ignoring dominated strategies' },
+      ],
+      correctOptionId: 'b',
+      explanation: 'Full No-Limit Hold\'em has approximately 10^160 possible game states — vastly beyond computational capacity. Solvers abstract the game tree by discretizing bet sizes (e.g., 33%, 75%, 150% pot only) and grouping similar hands into buckets. The abstracted game\'s Nash equilibrium is computed exactly, then mapped back to real poker hands.',
+    },
+  ],
+
   module9: [
     {
       id: 'm9q1', moduleId: 'module9', type: 'multi-choice', difficulty: 2, xpReward: 10,

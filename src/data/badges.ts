@@ -92,6 +92,13 @@ export const BADGES: Badge[] = [
     icon: '📚',
     unlockCondition: 'Complete Module 9',
   },
+  {
+    id: 'mathematician',
+    name: 'Game Theorist',
+    description: 'Completed Module 10: The Mathematics of Poker — game theory, Nash equilibrium, and rigorous proofs',
+    icon: '∑',
+    unlockCondition: 'Complete Module 10',
+  },
 ];
 
 export const MODULE_BADGES: Record<string, string> = {
@@ -104,4 +111,5 @@ export const MODULE_BADGES: Record<string, string> = {
   module7: 'river-shark',
   module8: 'exploit-master',
   module9: 'study-master',
+  module10: 'mathematician',
 };

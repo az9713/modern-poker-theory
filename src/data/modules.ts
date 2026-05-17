@@ -2365,6 +2365,396 @@ export const MODULES: Module[] = [
       },
     ],
   },
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MODULE 10: The Mathematics of Poker
+  // ──────────────────────────────────────────────────────────────────────────
+  {
+    id: 'module10',
+    title: 'The Mathematics of Poker',
+    tagline: 'Game theory, Nash equilibrium, and rigorous proofs of why GTO works.',
+    icon: '∑',
+    weekEquivalent: 'Weeks 15-16',
+    badgeId: 'mathematician',
+    belt: 'black',
+    color: '#dc2626',
+    treatiseSections: [7, 8, 9, 10],
+    lessons: [
+      // ── Lesson 1 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson1',
+        title: 'Poker as an Extensive Form Game',
+        estimatedMinutes: 15,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Extensive form game', definition: 'A mathematical representation of a sequential game as a tree, specifying players, actions, information, and payoffs at each decision point' },
+          { term: 'Information set', definition: 'A set of game-tree nodes that a player cannot distinguish between — they know which information set they are in, but not which specific node' },
+          { term: 'Strategy (game theory)', definition: 'A complete plan specifying an action (or probability distribution over actions) for every information set a player might reach' },
+          { term: 'Imperfect information', definition: 'A game property where players do not observe all prior actions or private information — poker is an imperfect-information game' },
+          { term: 'Behavioral strategy', definition: 'A strategy that specifies a probability distribution over actions independently at each information set — the standard strategy type in poker analysis' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'To reason rigorously about poker, we need a precise mathematical object that represents it. That object is the **extensive form game** — a framework developed by von Neumann and Morgenstern (1944) and formalized by Kuhn (1953). Every concept in GTO poker theory is a theorem about this object.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Extensive Form Game**\nA finite extensive form game is a tuple (N, A, H, Z, χ, ρ, σ, u) where:\n• N = {1, 2, ..., n} is the set of players\n• H is the set of non-terminal histories (game nodes)\n• Z is the set of terminal histories (leaves of the game tree)\n• χ: H → 2^A assigns legal actions at each node\n• ρ: H → N assigns the acting player at each node\n• σ: H × A → H ∪ Z is the successor function\n• u = (u_1, ..., u_n) where u_i: Z → ℝ assigns utilities at terminal nodes\n• For each player i, I_i is a partition of their nodes into information sets',
+          },
+          {
+            type: 'text',
+            content: 'The **information partition** I_i is what makes poker hard. Each information set I ∈ I_i is a collection of nodes that player i cannot distinguish — they know which set they are in, but not which specific node within that set. This captures the fact that you cannot see your opponent\'s hole cards.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Strategy in an Extensive Form Game**\nA behavioral strategy for player i is a function:\n  s_i: I_i → Δ(A)\nwhere Δ(A) is the set of probability distributions over legal actions at information set I.\n\nA pure strategy assigns probability 1 to exactly one action at each information set.\nA mixed (behavioral) strategy assigns positive probability to multiple actions at some information set.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Mapping poker onto this framework**\n\nIn a simplified 2-street heads-up NLHE game:\n• N = {IP, OOP} — two players\n• Hole cards are dealt privately, creating the fundamental information asymmetry\n• Information set of IP on the flop: all (flop, IP hole cards, opponent\'s preflop action) combinations — IP knows their cards and the board, but not OOP\'s hole cards\n• At each street: check, bet, call, fold, raise are the legal actions\n• Terminal nodes Z: showdown, or a player folds\n• u_IP(z) = chips won by IP at terminal node z; u_OOP(z) = −u_IP(z) (zero-sum)\n\nA strategy for IP is a function from every IP information set (board × IP hand × action history) to a probability distribution over {check, bet/size_1, bet/size_2, fold, raise}.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why imperfect information changes everything**\n\nIn chess (perfect information), backward induction (Zermelo\'s theorem) guarantees an optimal deterministic strategy exists — just look ahead to all possible positions.\n\nIn poker (imperfect information), backward induction fails: at an information set with multiple nodes, you cannot compute the "value" of each node independently because you don\'t know which node you\'re at. The optimal strategy must be computed over the entire information set simultaneously — which requires equilibrium analysis, not simple tree search.',
+          },
+          {
+            type: 'key-point',
+            content: 'Poker is a finite two-player imperfect-information extensive form game. This mathematical object is what solvers compute equilibria for. Every GTO concept — ranges, mixing frequencies, MDF — is a property of the Nash equilibrium of this object.',
+          },
+        ],
+      },
+      // ── Lesson 2 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson2',
+        title: 'Mixed Strategies & The Indifference Principle',
+        estimatedMinutes: 15,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Best response', definition: 'A strategy s_i that maximizes player i\'s expected utility given the strategies s_{-i} of all other players' },
+          { term: 'Nash equilibrium', definition: 'A strategy profile where every player\'s strategy is a best response to the strategies of all other players — no player can unilaterally improve their outcome' },
+          { term: 'Indifference principle', definition: 'At a Nash equilibrium, if a player mixes between two actions with positive probability, those two actions must yield equal expected utility' },
+          { term: 'Support (of a mixed strategy)', definition: 'The set of actions assigned positive probability by a mixed strategy' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'The **indifference principle** is the single most important theorem for understanding GTO poker. It explains why solvers produce mixed strategies, why you should mix with certain hands, and why a balanced opponent makes you indifferent. Here we prove it formally.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Nash Equilibrium (2-player)**\nA strategy profile (s_1*, s_2*) is a Nash equilibrium if:\n  u_1(s_1*, s_2*) ≥ u_1(s_1, s_2*)  for all strategies s_1\n  u_2(s_1*, s_2*) ≥ u_2(s_1*, s_2)  for all strategies s_2\n\nEquivalently: s_i* is a best response to s_{-i}* for each i.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**Indifference Principle**\nLet (s_1*, s_2*) be a Nash equilibrium. If player i mixes between actions a and b at information set I (i.e., s_i*(a|I) > 0 and s_i*(b|I) > 0), then:\n  EV_i(a | s_{-i}*) = EV_i(b | s_{-i}*)',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: 'Suppose for contradiction that EV_i(a | s_{-i}*) > EV_i(b | s_{-i}*).\n\nLet ε = s_i*(b|I) > 0. Define strategy s_i\' identical to s_i* except at I: s_i\'(a|I) = s_i*(a|I) + ε, s_i\'(b|I) = 0.\n\nThen:\n  u_i(s_i\', s_{-i}*) = u_i(s_i*, s_{-i}*) + ε · [EV_i(a | s_{-i}*) − EV_i(b | s_{-i}*)]\n                     > u_i(s_i*, s_{-i}*)\n\nThis contradicts s_i* being a best response to s_{-i}*. The same argument shows EV_i(b) ≥ EV_i(a). Therefore EV_i(a) = EV_i(b).',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Poker translation of the indifference principle**\n\nWhenever GTO play calls for mixing — c-betting some fraction of your range, for instance — it means the EV of c-betting and checking is exactly equal for the mixed hands.\n\nWhen a solver says "ATo: bet 33% with probability 0.42, check with probability 0.58", it means:\n  EV(bet 33% with ATo | opponent plays GTO) = EV(check with ATo | opponent plays GTO)\n\nThis also means: the opponent\'s GTO response makes you indifferent. If villain is playing GTO, you literally cannot do better by deviating with ATo — both options are equally good. The solver uses mixing to prevent exploitation.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Why pure strategies are exploitable**\n\nSuppose IP always c-bets the top 60% of their range and checks the bottom 40%. OOP now knows: any bet is from the top 60%, any check is from the bottom 40%. OOP can over-fold to bets (they know it\'s a strong range) and over-bluff when checked to (they know it\'s a weak range).\n\nMixing prevents this: if you bet hands across your full range at appropriate frequencies, OOP cannot extract information about your hand category from your action. This is the strategic value of mixed strategies — they make your actions information-neutral.',
+          },
+          {
+            type: 'key-point',
+            content: 'The indifference principle is the master key to GTO poker. If your opponent plays GTO, they mix in ways that make you indifferent at every decision point. Your best strategy is also a mixed strategy that makes them indifferent. The Nash equilibrium is where both indifference conditions are simultaneously satisfied.',
+          },
+        ],
+      },
+      // ── Lesson 3 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson3',
+        title: 'Zero-Sum Games & The Minimax Theorem',
+        estimatedMinutes: 15,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Zero-sum game', definition: 'A game where the sum of all players\' utilities at every terminal node equals zero — one player\'s gain is exactly another\'s loss' },
+          { term: 'Minimax strategy', definition: 'The strategy that minimizes the maximum loss a player can suffer regardless of the opponent\'s strategy' },
+          { term: 'Maximin strategy', definition: 'The strategy that maximizes a player\'s minimum guaranteed payoff — equivalent to minimax in zero-sum games' },
+          { term: 'Game value', definition: 'The unique expected payoff at the Nash equilibrium of a two-player zero-sum game — both players\' minimax strategies achieve this value' },
+          { term: 'Von Neumann\'s Minimax Theorem', definition: 'In every finite two-player zero-sum game, the minimax value equals the maximin value, and both are achieved by mixed strategies' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'Before GTO poker theory, von Neumann (1928) proved a theorem that establishes the mathematical foundation for all of it. The minimax theorem guarantees that every finite two-player zero-sum game has a solution — a pair of optimal strategies — and that this solution is a Nash equilibrium.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Zero-Sum Game**\nA two-player game is zero-sum if for every terminal node z ∈ Z:\n  u_1(z) + u_2(z) = 0\n\nEquivalently, u_2 = −u_1: whatever player 1 wins, player 2 loses by exactly that amount.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**Claim: Heads-up poker is zero-sum (ignoring rake)**\nAt every terminal node of a heads-up poker hand, the chips won by IP equal the chips lost by OOP and vice versa. Therefore u_IP(z) + u_OOP(z) = 0 for all z ∈ Z.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: 'At any terminal node, either:\n(a) A player folds: the folder loses exactly what they put in the pot; the other player wins exactly that amount. Sum = 0.\n(b) Showdown: the winner receives the entire pot; the loser receives nothing. The winner\'s gain = pot, the loser\'s gain = −(their contribution to pot). Sum over all contributions = 0.\n\nIn both cases, one player\'s gain equals the other\'s loss. Therefore u_IP + u_OOP = 0 at every terminal node.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**Von Neumann\'s Minimax Theorem (1928)**\nFor every finite two-player zero-sum game:\n\n  max_{x ∈ Δ(S_1)} min_{y ∈ Δ(S_2)} u(x, y)  =  min_{y ∈ Δ(S_2)} max_{x ∈ Δ(S_1)} u(x, y)  =  V\n\nThis common value V is called the game value. Both players have mixed strategies x*, y* achieving this value simultaneously. Furthermore, (x*, y*) is a Nash equilibrium.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: 'Proof sketch (via Brouwer\'s fixed-point theorem):\n\n1. Define the best-response correspondence: BR_i(s_{-i}) = argmax_{s_i} u_i(s_i, s_{-i}).\n\n2. The strategy space Δ(S_1) × Δ(S_2) is a compact convex subset of ℝ^n.\n\n3. The best-response correspondence is upper hemicontinuous with convex values (since u is linear in mixed strategies).\n\n4. By Kakutani\'s fixed-point theorem (a generalization of Brouwer\'s), the joint best-response correspondence has a fixed point: a profile (x*, y*) where x* ∈ BR_1(y*) and y* ∈ BR_2(x*). This is a Nash equilibrium.\n\n5. In a zero-sum game, every Nash equilibrium achieves the same value V (since u_1 + u_2 = 0), so minimax = maximin = V.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**What the minimax theorem means for poker**\n\nGTO strategy = minimax strategy. When you play GTO poker, you are playing the strategy that minimizes the maximum your opponent can earn against you — regardless of what they do.\n\nFormally: for your GTO strategy x*, and any opponent strategy y:\n  u_OOP(x*, y) ≤ V  (opponent cannot earn more than V against GTO)\n\nThis is why GTO is described as "unexploitable." It doesn\'t mean you win the most — it means you cannot be exploited. Against a GTO opponent, any deviation from GTO by either player is neutral or negative in EV.',
+          },
+          {
+            type: 'key-point',
+            content: 'Poker has a game value V. GTO strategies achieve this value simultaneously for both players. The minimax theorem guarantees GTO strategies exist. Solvers find approximations to these strategies. Playing GTO means your opponent cannot earn more than V per hand against you, no matter what they do.',
+          },
+        ],
+      },
+      // ── Lesson 4 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson4',
+        title: 'Deriving MDF & Alpha from First Principles',
+        estimatedMinutes: 20,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Alpha (α)', definition: 'The minimum fold frequency required for a bet to be immediately profitable as a pure bluff: α = B/(P+B)' },
+          { term: 'MDF (Minimum Defense Frequency)', definition: 'The minimum fraction of your range that must continue to prevent the opponent\'s bluffs from being automatically profitable: MDF = P/(P+B) = 1 − α' },
+          { term: 'Bluff-to-value ratio', definition: 'The optimal ratio of bluff combos to value combos in an equilibrium betting strategy: bluffs/value = B/(P+B)' },
+          { term: 'Double indifference', definition: 'The Nash equilibrium condition for the river bluffing game: IP\'s strategy makes OOP indifferent AND OOP\'s strategy makes IP indifferent — simultaneously' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'We now derive the two most important poker formulas — MDF and the optimal bluff frequency — as Nash equilibrium conditions of a simplified river game. This is a complete proof from first principles.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**The River Bluffing Game**\nSetup:\n• Pot entering river = P > 0\n• IP acts first. IP has two hand types: VALUE (wins at showdown) and BLUFF (loses at showdown).\n• OOP has only BLUFF-CATCHERS (beats bluffs, loses to value hands)\n• IP\'s strategy: always bet B with value hands; bluff with probability p_b ∈ [0,1]\n• OOP\'s strategy: call with probability c ∈ [0,1] in response to a bet\n• If IP checks, the hand is checked down: value wins P, bluff wins 0.\n• Bet size B is fixed and known to both players.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**Theorem: The unique Nash equilibrium of the River Bluffing Game is:**\n  c* = P/(P+B)   [OOP\'s equilibrium call frequency = MDF]\n  α* = B/(P+2B)  [equilibrium fraction of bets that are bluffs]\n\nEquivalently, the equilibrium bluff-to-value ratio is B/(P+B).',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: '**Part 1: Derive c* (OOP\'s equilibrium calling frequency)**\n\nFor IP to be willing to bluff with positive probability, IP must be indifferent between bluffing and not bluffing (by the Indifference Principle).\n\nEV(IP bluffs, given OOP calls with probability c):\n  = P(OOP folds) · P + P(OOP calls) · (−B)\n  = (1−c)P − cB\n\nEV(IP does not bluff) = 0   [bluff checks back, always loses]\n\nSetting EV(bluff) = EV(no bluff):\n  (1−c)P − cB = 0\n  P − cP − cB = 0\n  P = c(P + B)\n  c* = P/(P+B)\n\nNote: MDF = c* = P/(P+B). The fold frequency is 1−c* = B/(P+B) = α (alpha).',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: '**Part 2: Derive α* (IP\'s equilibrium bluff density)**\n\nLet α = fraction of IP\'s bets that are bluffs (i.e., α = bluff combos / total betting combos).\n\nFor OOP to be willing to call with positive probability, OOP must be indifferent between calling and folding (Indifference Principle).\n\nEV(OOP calls a bet, given fraction α are bluffs):\n  = P(IP bluff | bet) · (P+B) + P(IP value | bet) · (−B)\n  = α(P+B) + (1−α)(−B)\n  = α(P+B) − (1−α)B\n  = αP + αB − B + αB\n  = α(P + 2B) − B\n\nEV(OOP folds) = 0\n\nSetting EV(call) = EV(fold):\n  α(P+2B) − B = 0\n  α* = B/(P+2B)\n\nBluff-to-value ratio: α*/(1−α*) = [B/(P+2B)] / [(P+B)/(P+2B)] = B/(P+B).',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: '**Part 3: Verify this is a Nash equilibrium**\n\nWe must show neither player can profitably deviate from (c*, α*).\n\nIf IP deviates to bluffing more (p_b > p_b*):\n  α > α*  →  EV(OOP calls) = α(P+2B)−B > 0  →  OOP should call 100%\n  At c=1: EV(IP bluffs) = (1−1)P − 1·B = −B < 0\n  IP loses on every bluff → deviation is not profitable.\n\nIf IP deviates to bluffing less (p_b < p_b*):\n  α < α*  →  EV(OOP calls) < 0  →  OOP should fold 100%\n  At c=0: EV(IP bluffs) = P > 0, but IP can always bluff more → not an equilibrium deviation\n  (IP would want to bluff more, moving back toward equilibrium).\n\nBy symmetry, OOP deviating from c* is also not profitable (verified by plugging into IP\'s EV).\n\nTherefore (c*, α*) is the unique Nash equilibrium of this game.',
+          },
+          {
+            type: 'table',
+            content: 'MDF and optimal bluff frequency for common bet sizes:',
+            tableData: {
+              headers: ['Bet size (% of pot)', 'MDF = P/(P+B)', 'Alpha = B/(P+B)', 'Bluff/value ratio = B/(P+B)'],
+              rows: [
+                ['25% pot (B = 0.25P)', '80%', '20%', '1 : 4 (20% bluffs)'],
+                ['33% pot (B = 0.33P)', '75%', '25%', '1 : 3 (25% bluffs)'],
+                ['50% pot (B = 0.5P)', '67%', '33%', '1 : 2 (33% bluffs)'],
+                ['75% pot (B = 0.75P)', '57%', '43%', '3 : 4 (43% bluffs)'],
+                ['100% pot (B = P)', '50%', '50%', '1 : 1 (50% bluffs)'],
+                ['150% pot (B = 1.5P)', '40%', '60%', '3 : 2 (60% bluffs)'],
+              ],
+            },
+          },
+          {
+            type: 'key-point',
+            content: 'MDF and alpha are not arbitrary conventions — they are the unique Nash equilibrium conditions of the river bluffing game. Any defense frequency below MDF lets opponent bluff profitably with any two cards. Any bluff frequency above the equilibrium ratio makes calling +EV for the opponent. The equilibrium is a knife-edge where both players are simultaneously indifferent.',
+          },
+        ],
+      },
+      // ── Lesson 5 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson5',
+        title: 'Nash Equilibrium: Definition & Existence',
+        estimatedMinutes: 15,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Fixed point', definition: 'A point x* of a function f where f(x*) = x* — a self-consistent state that maps to itself' },
+          { term: 'Brouwer\'s fixed-point theorem', definition: 'Any continuous function from a compact convex set to itself has at least one fixed point' },
+          { term: 'Nash\'s existence theorem', definition: 'Every finite n-player game has at least one Nash equilibrium in mixed strategies' },
+          { term: 'Best-response correspondence', definition: 'The mapping BR_i(s_{-i}) = argmax_{s_i} u_i(s_i, s_{-i}) — the set of best responses to a given opponent strategy' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'We have used Nash equilibria throughout this module, but we haven\'t proved they exist. John Nash\'s 1950 paper — a 2-page proof — established that every finite game has at least one Nash equilibrium in mixed strategies. The proof uses a fixed-point theorem that makes it one of the most elegant results in mathematics.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**Nash\'s Existence Theorem (1950)**\nEvery finite n-player game has at least one Nash equilibrium in mixed strategies.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: 'Proof (via Kakutani\'s fixed-point theorem):\n\n1. Strategy space: The set of all mixed strategy profiles Δ = Δ(S_1) × ... × Δ(S_n) is a compact convex subset of ℝ^k (since each Δ(S_i) is a simplex).\n\n2. Best-response correspondence: Define φ: Δ → 2^Δ by\n     φ(s) = BR_1(s_{-1}) × ... × BR_n(s_{-n})\n   This maps each strategy profile to the set of best-response profiles.\n\n3. Properties of φ:\n   (a) φ(s) is non-empty for all s (best responses always exist by compactness)\n   (b) φ(s) is convex (since u_i is linear in s_i, any convex combination of best responses is also a best response)\n   (c) φ has a closed graph (follows from continuity of u_i)\n\n4. Kakutani\'s theorem: A correspondence satisfying (a)-(c) from a compact convex set to itself has a fixed point s* ∈ φ(s*).\n\n5. A fixed point s* satisfies: s_i* ∈ BR_i(s_{-i}*) for each i — which is exactly the definition of a Nash equilibrium.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**What Nash\'s theorem guarantees for poker**\n\nNash\'s theorem tells us: a GTO solution to poker EXISTS. There is at least one strategy profile where neither player can do better by unilaterally changing strategy.\n\nWhat it doesn\'t guarantee:\n• Uniqueness of GTO strategies (there can be multiple Nash equilibria, though they share the same game value in zero-sum games)\n• Computability in reasonable time (full poker has ~10^160 information sets)\n• That the equilibrium is unique in terms of strategies (though the VALUE is unique by the minimax theorem)\n\nThis is why solvers use abstraction: they approximate Nash equilibria in a simplified game tree, then map those strategies back to real poker.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**Uniqueness of game value but not strategies**\n\nIn our river bluffing game, the Nash equilibrium strategies are unique (c* = P/(P+B), α* = B/(P+2B)). But in larger games, different Nash equilibria can have different strategies while achieving the same game value.\n\nExample: If OOP can call with hand A or hand B interchangeably (they have equal equity), both mixing strategies are Nash equilibria. The game value V is the same, but the specific mixed strategy achieving it is not unique.\n\nFor practical GTO play, this matters: different solvers may produce different mixed strategies at the same spots while both being valid GTO solutions.',
+          },
+          {
+            type: 'key-point',
+            content: 'Nash\'s theorem guarantees GTO exists for all poker formats. The minimax theorem guarantees the game value is unique. Solvers search for approximate equilibria using regret minimization (CFR) over simplified game trees. The equilibrium exists — finding it efficiently is the computational challenge.',
+          },
+        ],
+      },
+      // ── Lesson 6 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson6',
+        title: 'The Clairvoyance Game: A Complete Nash Equilibrium',
+        estimatedMinutes: 20,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Clairvoyance game', definition: 'A simplified poker model where one player (IP) sees both hands — a key pedagogical tool for deriving GTO river strategies' },
+          { term: 'Polarized range', definition: 'A range consisting of only nut hands and total bluffs — with no medium-strength hands. The optimal range structure for large river bets.' },
+          { term: 'Bluff-catcher', definition: 'A hand that beats all bluffs but loses to all value hands in a polarized scenario' },
+          { term: 'Game value (clairvoyance)', definition: 'The EV of the clairvoyance game to IP under Nash equilibrium play: V = P × B/(P+B) per hand (from value hands)' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'The **clairvoyance game** is the cleanest model of the river decision. We\'ll analyze it completely — specifying the game tree, finding Nash equilibrium strategies, computing the game value, and extracting the poker intuitions. This is a full worked example of game-theoretic analysis.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**The Clairvoyance Game (Formal Setup)**\n• Pot = P entering the river\n• IP is clairvoyant: IP sees both hole cards\n• IP holds either NUT (probability q) or BLUFF (probability 1−q)\n• OOP holds only BLUFF-CATCHER (beats bluff, loses to nut)\n• IP acts first: BET(B) or CHECK\n• OOP responds to a bet: CALL or FOLD\n• If CHECK: showdown at no cost. NUT wins P; BLUFF wins 0\n• Utilities: IP_utility = chips won relative to checking (so checking gives reference point 0 for bluffs, P for nuts)',
+          },
+          {
+            type: 'step-list',
+            content: 'Solving the clairvoyance game (5 steps):',
+            steps: [
+              '**Observe dominant strategy for value hands**: IP always bets nuts since betting weakly dominates checking (EV(bet B) = P+B if called, P if folded > EV(check) = P at showdown for all c ≥ 0). So p_v = 1 (always bet with nuts).',
+              '**Find OOP\'s equilibrium calling frequency c***: IP must be indifferent between bluffing and checking back. Set EV(bluff bet) = EV(bluff check) = 0. Solving gives c* = P/(P+B) = MDF.',
+              '**Find IP\'s equilibrium bluffing frequency p_b***: OOP must be indifferent between calling and folding. Let α* = fraction of IP bets that are bluffs. Set EV(OOP call) = EV(OOP fold) = 0. Solving gives α* = B/(P+2B) and bluff/value ratio = B/(P+B).',
+              '**Compute the game value**: Under Nash equilibrium play, IP\'s EV from value hands = q · [c* · (P+B) + (1−c*) · P] = q · [P/(P+B) · (P+B) + B/(P+B) · P] = q · [P + PB/(P+B)] = q · P(P+2B)/(P+B). IP\'s EV from bluffs = 0 (by construction — IP is indifferent). Total game value V = q · P(P+2B)/(P+B).',
+              '**Verify no profitable deviations exist**: (a) If IP bluffs more, OOP calls 100%, making bluffs −EV. (b) If IP bluffs less, OOP folds 100% to bets, but then IP would want to bluff more (gets P for free). (c) If OOP calls more than c*, IP never bluffs (EV(bluff) < 0), so OOP gains nothing from over-calling. The equilibrium is stable.',
+            ],
+          },
+          {
+            type: 'formula',
+            formulaLabel: 'Nash Equilibrium Summary — Clairvoyance Game',
+            formula: 'IP:  always bet value; bluff with frequency p_b* s.t. α* = B/(P+2B)\nOOP: call with frequency c* = P/(P+B)  [= MDF]\nValue: V = q · P(P+2B)/(P+B)',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why this model generalizes to real poker**\n\nReal river situations aren\'t perfectly polarized and OOP doesn\'t always have pure bluff-catchers. But the clairvoyance game\'s insights generalize:\n\n1. **Polarize your betting range on the river** — value hands and bluffs, not medium-strength hands (those check-call or check-fold more efficiently)\n2. **Size determines bluff frequency** — larger bets require more bluffs per value hand (ratio B/(P+B) grows with B), which is why overbets are bluff-heavy\n3. **MDF is always P/(P+B)** regardless of IP\'s hand distribution — it depends only on bet size relative to pot\n4. **The game value accrues to the player with nut advantage** — whoever has more nut hands extracts more value, even under optimal play by both sides',
+          },
+          {
+            type: 'key-point',
+            content: 'The clairvoyance game is the foundational model of river play. Every river concept in poker — polarization, MDF, bet sizing, bluff density — is a theorem about this model. Real poker is a generalization with more hand types, but the equilibrium structure is identical.',
+          },
+        ],
+      },
+      // ── Lesson 7 ────────────────────────────────────────────────────────────
+      {
+        id: 'module10-lesson7',
+        title: 'Counterfactual Regret Minimization',
+        estimatedMinutes: 18,
+        xpReward: 25,
+        keyTerms: [
+          { term: 'Regret', definition: 'The difference between what a player earned and what they could have earned had they always played a specific action — measures how much a player "regrets" not having played differently' },
+          { term: 'Regret matching', definition: 'The algorithm that selects actions proportional to their positive cumulative regret — actions with higher regret are played more often' },
+          { term: 'Counterfactual regret (CFR)', definition: 'Regret calculated at each information set independently, using counterfactual reach probabilities — enables efficient regret minimization in extensive form games' },
+          { term: 'Average strategy', definition: 'The time-average of all strategies played across CFR iterations — this average strategy converges to Nash equilibrium, not the current strategy' },
+          { term: 'CFR convergence', definition: 'In two-player zero-sum games, CFR\'s average regret is bounded by O(√(|A|/T)), where T = iterations and |A| = number of actions' },
+        ],
+        sections: [
+          {
+            type: 'text',
+            content: 'Nash equilibria exist (Lesson 5) and have the minimax property (Lesson 3). But how do we **find** them? For small games, linear programming works. For poker, a fundamentally different approach is needed: **Counterfactual Regret Minimization (CFR)**, developed by Zinkevich et al. (2007) and the algorithmic engine behind every modern poker solver.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Regret (informal)**\nAfter T rounds of play, the regret of action a at information set I is:\n  R_T(a) = Σ_{t=1}^{T} [u_i(a, s_{-i}^t) − u_i(s_i^t, s_{-i}^t)]\n\nThis measures: how much more utility could player i have earned if they had played action a on every round t, versus what they actually earned?\n\nPositive regret → player wishes they had played a more often\nNegative regret → player does not regret playing a less',
+          },
+          {
+            type: 'callout',
+            calloutType: 'definition',
+            content: '**Regret Matching**\nGiven cumulative regrets R_T(a) for each action a at information set I:\n\n  s_i(a | I) = R_T^+(a) / Σ_{a\'} R_T^+(a\')\n\nwhere R^+(x) = max(x, 0) (positive part).\n\nIn words: play actions proportional to how much you regret not having played them. Actions with zero or negative cumulative regret are played with zero probability.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'theorem',
+            content: '**CFR Convergence Theorem (Zinkevich et al., 2007)**\nIn a two-player zero-sum game, if both players use counterfactual regret minimization, the average strategy profile (s_1^avg, s_2^avg) satisfies:\n\n  max_{s_i} u_i(s_i, s_{-i}^avg) − u_i(s_i^avg, s_{-i}^avg) ≤ 2 · Δ_u · √(|A_i| / T)\n\nwhere Δ_u = range of utilities, |A_i| = number of actions, T = number of iterations.\n\nAs T → ∞, average regret → 0, and (s_1^avg, s_2^avg) → Nash equilibrium.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'proof',
+            content: 'Proof sketch (regret matching has vanishing average regret):\n\nKey insight: at each information set, we run an independent "online learning" algorithm. Regret matching is a no-regret algorithm — it is known that regret matching achieves average regret bounded by O(1/√T).\n\nIn extensive form games, we use counterfactual probabilities: the probability of reaching information set I if player i had tried to reach I (ignoring i\'s own actions). This decouples information sets and allows local regret minimization.\n\nThe Folk Theorem of no-regret learning: if all players play no-regret algorithms in a two-player zero-sum game, the joint average play profile converges to a Nash equilibrium. Since regret matching is no-regret, CFR converges.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'example',
+            content: '**CFR in the River Bluffing Game (3 iterations)**\n\nInitial strategy: IP bluffs 50%, OOP calls 50%.\n\nIteration 1: IP bluffs 50%, OOP calls 50%.\n  EV(IP bluff) = 0.5·P − 0.5·B. Say P=10, B=5: EV = 2.5. EV(no bluff) = 0. Regret(bluff) = +2.5.\n  EV(OOP call) = 0.5·(P+B) − 0.5·B = 5. EV(fold) = 0. Regret(call) = +5.\n\nIteration 2: Both players increase frequency of regret-leading action.\n  IP bluffs more (cumulative regret favors bluffing).\n  OOP calls more (cumulative regret favors calling).\n\nAfter T iterations: IP bluffs ~B/(P+B) = 33% of bets. OOP calls ~P/(P+B) = 67%.\nThe average strategies converge to the Nash equilibrium c* = 2/3, α* = 1/4.',
+          },
+          {
+            type: 'callout',
+            calloutType: 'concept',
+            content: '**Why solvers don\'t play the current strategy — they track the average**\n\nA key subtlety: the current strategy at iteration T is not necessarily close to Nash equilibrium. It oscillates. The **average strategy** across all iterations converges.\n\nThis is why solver output represents the average strategy after millions of iterations, not the strategy from the final iteration.\n\nModern variants — CFR+ (2014), Deep CFR (2019), Monte Carlo CFR — improve convergence speed:\n• CFR+: zero negative regrets instead of just ignoring them → 2× faster convergence\n• Monte Carlo CFR: sample subtrees rather than traversing the full tree → scales to larger games\n• Deep CFR: neural networks approximate counterfactual values → handles games too large for tabular CFR',
+          },
+          {
+            type: 'table',
+            content: 'Solver algorithm comparison:',
+            tableData: {
+              headers: ['Algorithm', 'Year', 'Key idea', 'Game size'],
+              rows: [
+                ['Vanilla CFR', '2007', 'Full tree traversal with regret matching', 'Small games (~10^7 nodes)'],
+                ['Monte Carlo CFR', '2009', 'Sample actions instead of full traversal', 'Medium games (~10^10 nodes)'],
+                ['CFR+', '2014', 'Reset negative regrets to zero (faster convergence)', 'Medium-large games'],
+                ['Deep CFR', '2019', 'Neural networks approximate value functions', 'Large abstracted games'],
+                ['ReBeL / DREAM', '2020+', 'Recursive reasoning + deep learning hybrid', 'Near-full-scale NLHE'],
+              ],
+            },
+          },
+          {
+            type: 'key-point',
+            content: 'CFR is why GTO poker solutions exist. It converts the Nash equilibrium existence theorem into a practical algorithm: run regret matching at every information set, accumulate the average strategy, and the result converges to equilibrium. Modern solvers run millions of CFR iterations on abstracted game trees. When you use GTO Wizard or PioSOLVER, you\'re using a CFR approximation.',
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getModule(id: string): Module | undefined {

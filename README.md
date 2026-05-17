@@ -37,16 +37,18 @@ The course follows Acevedo's framework across 9 progressive modules:
 | 7 | The Full Game — turn/river play, bluff selection, multiway pots, hand review | Brown |
 | 8 | Exploit Mode — the exploitation matrix, population leaks, bankroll & variance | Black |
 | 9 | The Study Table — solver literacy, push/fold, game selection, mental game, study routines | Black |
+| 10 | The Mathematics of Poker — extensive form games, indifference proofs, minimax theorem, MDF/alpha derivations, Nash existence, clairvoyance game, CFR | Black |
 
 ## Features
 
-- **40+ interactive lessons** with playing card displays, position diagrams, and the 13×13 range grid
+- **50+ interactive lessons** with playing card displays, position diagrams, and the 13×13 range grid
 - **Worked examples** — step-by-step EV calculations, pot odds decisions, and scenario walkthroughs
 - **Preflop range charts** — interactive range grids for UTG, BTN, and BB positions
-- **Quiz system** with 80+ questions across three types: multiple choice, board classification, and numeric calculation
+- **Quiz system** with 90+ questions across three types: multiple choice, board classification, and numeric calculation
 - **Interactive tools**: Pot Odds Calculator, EV Calculator, Range Builder
 - **Reference Glossary** (`/reference`) — searchable index of 200+ key terms, filterable by module
-- **Gamification**: XP, 7 levels (Fish → Poker Theorist), 13 badges, daily streak tracking
+- **Proof-level game theory** — Module 10 includes formal proofs of the Indifference Principle, von Neumann's Minimax Theorem, MDF/alpha derivations, Nash existence, and Counterfactual Regret Minimization convergence
+- **Gamification**: XP, 7 levels (Fish → Poker Theorist), 14 badges, daily streak tracking
 - **Progress persistence** via localStorage — picks up where you left off
 
 ## Curriculum Depth
@@ -56,6 +58,7 @@ The course is structured around Acevedo's three-part framework:
 - **Elements of Theory** — EV, equity, Nash equilibrium, GTO vs exploitative play, MDF, combinatorics
 - **Preflop Theory & Practice** — opening ranges by position, 3-bet pots, push/fold, stack depth, ICM, bankroll
 - **Postflop Theory & Practice** — equity buckets, bet sizing, board textures, c-betting, turn/river play, hand review, solver study
+- **Mathematical Foundations** — extensive form games, mixed strategy proofs, minimax theorem, full derivations of MDF and bluff-to-value ratio, Nash existence via Kakutani's fixed point, and CFR convergence proof
 
 ## Running Locally
 
